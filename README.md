@@ -1,6 +1,6 @@
 # RetainIQ
 
-**Real-time VAS offer decisioning for telecom operators.** RetainIQ is a thin, stateless decisioning layer that sits between customer-facing channels (Agentforce, Genesys, operator apps) and BSS/VAS backends. It returns ranked, margin-aware, compliance-checked retention offers in a single low-latency API call—without replacing your conversational AI or billing stack.
+**The real-time CVM decisioning engine for telecom operators.** RetainIQ is the execution layer that Customer Value Management teams need — a stateless API that sits between channels (Agentforce, Genesys, operator apps) and BSS/VAS backends. It scores churn, applies your eligibility rules, ranks offers by retention and margin, and returns compliant results in under 200ms. Your CVM team designs the strategy. RetainIQ executes it at the speed of conversation.
 
 | | |
 |---|---|

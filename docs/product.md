@@ -6,7 +6,7 @@ This document describes RetainIQ from a **product** perspective: who it serves, 
 
 ## 1. Vision
 
-**RetainIQ is the real-time brain for retention offers at telecom operators.** In the moment a subscriber shows intent to leave—or before they contact the carrier—RetainIQ scores risk, selects compliant VAS offers that balance **retention probability** and **margin**, and returns a ranked list fast enough for live voice and chat. Channels keep owning the conversation; BSS keeps owning billing. RetainIQ owns **which offer to show and why**.
+**RetainIQ is the real-time execution layer for Customer Value Management (CVM) at telecom operators.** It bridges the gap between CVM strategy and frontline execution. In the moment a subscriber shows intent to leave — or before they even contact the carrier — RetainIQ scores risk, applies your eligibility rules, selects compliant VAS offers that balance **retention probability** and **margin**, and returns a ranked list fast enough for live voice and chat. Your CVM team owns the strategy. Channels own the conversation. BSS owns billing. RetainIQ owns **which offer to show and why — in real time**.
 
 ---
 
@@ -43,7 +43,7 @@ mindmap
 
 ### 3.1 Primary buyers and users
 
-- **Economic buyer:** Head of Retention / VAS / Customer Value Management—cares about **saved revenue**, **margin**, and **time-to-market** for new bundles.
+- **Economic buyer:** VP of CVM / Head of Retention / VAS / Customer Value Management—cares about **saved revenue**, **margin**, **CVM campaign effectiveness**, and **time-to-market** for new bundles. This is a CVM budget-line purchase.
 - **Champion:** Contact centre transformation or CRM owner—cares about **agent experience** and **Salesforce/Genesys roadmap alignment**.
 - **Day-to-day users:** Supervisors and analysts tuning rules and reading dashboards; **agents** consume offers inside existing desktops (not a separate RetainIQ UI for every action).
 - **Day-2 power user:** The **retention analyst** who tunes ranking weights, writes eligibility rules in the JSON DSL, and monitors A/B test results. This person becomes the stickiest user — once they've encoded operator-specific logic into RetainIQ's rule engine, switching cost is high.
@@ -204,9 +204,11 @@ Not fixed in the technical design; typical axes for enterprise telecom SaaS:
 
 ## 13. Messaging snapshot
 
-**One-liner:** RetainIQ turns subscriber signals and your VAS catalog into **ranked, compliant, margin-aware offers** in real time—integrated in **one session**, not one year.
+**One-liner:** RetainIQ is the real-time execution layer for CVM — turning your offer strategy and VAS catalog into **ranked, compliant, margin-aware decisions** in under 200ms.
 
-**Elevator (three sentences):** Operators lose revenue when retention offers are slow, off-policy, or uneconomic. RetainIQ is a stateless decision API that plugs into Agentforce, Genesys, or your stack, scores churn, applies rules, and ranks offers in under two hundred milliseconds. Outcomes flow back so finance sees ROI and models improve.
+**Elevator (three sentences):** Your CVM team designs brilliant retention offers, but there's no system executing those decisions at the speed of a live conversation. RetainIQ is the stateless decision API that bridges CVM strategy to the frontline — it plugs into Agentforce, Genesys, or your stack, scores churn, applies your rules, and ranks offers in under two hundred milliseconds. Outcomes flow back so your CVM team sees ROI per SKU and models improve with every decision.
+
+**Category:** Customer Value Management (CVM) — Real-Time Decisioning. Also relevant to: CLM (Customer Lifecycle Management), Retention Management, Revenue Assurance, Next-Best-Offer (NBO).
 
 ---
 
