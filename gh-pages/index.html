@@ -298,12 +298,14 @@ nav .container { display: flex; align-items: center; justify-content: space-betw
 .tech-panel { display: none; }
 .tech-panel.active { display: block; }
 .bench-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 32px; }
-.bench-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px 16px; text-align: center; }
-.bench-val { font-size: 1.8rem; font-weight: 800; font-family: var(--mono); letter-spacing: -0.02em; }
-.bench-lbl { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; }
-.bench-sub { font-size: 0.68rem; color: var(--text-muted); opacity: 0.7; }
-.code-block { background: var(--code-bg); border: 1px solid var(--border); border-radius: 12px; padding: 24px; font-family: var(--mono); font-size: 0.78rem; line-height: 1.8; overflow-x: auto; color: var(--text-secondary); margin-bottom: 24px; }
+.bench-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px 16px; text-align: center; }
+.bench-val { font-size: 1.6rem; font-weight: 800; font-family: var(--mono); letter-spacing: -0.02em; line-height: 1.2; }
+.bench-lbl { font-size: 0.75rem; color: var(--text-muted); margin-top: 6px; font-weight: 500; }
+.bench-sub { font-size: 0.68rem; color: var(--text-muted); opacity: 0.6; margin-top: 2px; }
+.code-block { background: var(--code-bg); border: 1px solid var(--border); border-radius: 12px; padding: 24px; font-family: var(--mono); font-size: 0.78rem; line-height: 1.8; overflow-x: auto; color: var(--text-secondary); margin-bottom: 24px; white-space: pre; }
 .code-block .comment { color: var(--text-muted); }
+.perf-detail { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.perf-detail h3 { margin-bottom: 12px; }
 .ai-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 .ai-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 28px; position: relative; overflow: hidden; }
 .ai-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
@@ -361,6 +363,7 @@ footer .container { display: flex; align-items: center; justify-content: space-b
   .comparison { overflow-x: auto; }
   .nav-cta { display: none; }
   .bench-grid { grid-template-columns: repeat(2, 1fr); }
+  .perf-detail { grid-template-columns: 1fr; }
   .ai-grid { grid-template-columns: 1fr; }
   .obs-features { grid-template-columns: 1fr; }
   .journey-grid { grid-template-columns: 1fr; }
@@ -898,32 +901,30 @@ footer .container { display: flex; align-items: center; justify-content: space-b
         <div class="bench-card"><div class="bench-val" style="color:var(--cyan)">512</div><div class="bench-lbl">Requests/sec</div><div class="bench-sub">Single container peak</div></div>
       </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+      <div class="perf-detail">
         <div>
-          <h3 style="margin-bottom:12px">Pipeline Latency Budget</h3>
-          <div class="code-block">
-<span class="comment">// 5-stage pipeline — total &lt; 200ms p99</span>
-Stage 1: Enrich     │ &lt; 20ms │ L1 cache → Redis → BSS
-Stage 2: Score      │ &lt; 30ms │ LightGBM in-process
-Stage 3: Eligibility│ &lt; 40ms │ Catalog graph + rules
-Stage 4: Rank       │ &lt; 50ms │ Multi-objective scoring
-Stage 5: Respond    │ &lt; 20ms │ JSON assembly + async audit
-──────────────────────────────
-Total               │  160ms │ 40ms headroom to SLA</div>
+          <h3>Pipeline Latency Budget</h3>
+          <div class="code-block"><span class="comment">// 5-stage pipeline — total &lt; 200ms p99</span>
+Stage 1: Enrich      &lt; 20ms  L1 cache → Redis → BSS
+Stage 2: Score       &lt; 30ms  LightGBM in-process
+Stage 3: Eligibility &lt; 40ms  Catalog graph + rules
+Stage 4: Rank        &lt; 50ms  Multi-objective scoring
+Stage 5: Respond     &lt; 20ms  JSON + async audit
+─────────────────────────────────────────
+Total                 160ms  40ms headroom to SLA</div>
         </div>
         <div>
-          <h3 style="margin-bottom:12px">Two-Tier Cache Architecture</h3>
-          <div class="code-block">
-<span class="comment">// L1 in-process → L2 Redis → origin</span>
+          <h3>Two-Tier Cache Architecture</h3>
+          <div class="code-block"><span class="comment">// L1 in-process → L2 Redis → origin</span>
 Catalog:
   L1 ConcurrentHashMap (60s TTL)
   └→ L2 Redis (15 min TTL)
-      └→ Default catalog (6 products)
+     └→ Default catalog (6 products)
 
 Subscriber:
   L1 ConcurrentHashMap (30s TTL)
   └→ L2 Redis (5 min TTL)
-      └→ BSS fetch (500ms timeout)
+     └→ BSS fetch (500ms timeout)
 
 <span class="comment">// L1 hit rate: &gt;80% under sustained load</span>
 <span class="comment">// L1 hit latency: &lt; 0.1ms (no I/O)</span></div>
