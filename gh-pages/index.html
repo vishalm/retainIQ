@@ -166,17 +166,58 @@ nav .container { display: flex; align-items: center; justify-content: space-betw
 .card h3 { margin-bottom: 10px; }
 .card p { color: var(--text-secondary); font-size: 0.92rem; line-height: 1.7; }
 
-/* ── Pipeline ── */
-.pipeline-box { background: var(--pipeline-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 48px 36px; margin-top: 48px; }
-.pipeline-stages { display: flex; align-items: center; justify-content: center; gap: 0; flex-wrap: wrap; }
-.pipeline-stage { text-align: center; padding: 16px 12px; flex: 1; min-width: 120px; }
-.stage-num { width: 38px; height: 38px; border-radius: 50%; background: var(--card); border: 2px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 0.8rem; font-weight: 700; color: var(--cyan); margin: 0 auto 10px; transition: all 0.4s; }
-.pipeline-stage:hover .stage-num { background: var(--cyan); border-color: var(--cyan); color: #fff; }
-.stage-name { font-size: 0.82rem; font-weight: 600; color: var(--heading); margin-bottom: 2px; }
-.stage-time { font-size: 0.72rem; color: var(--text-muted); font-family: var(--mono); }
-.stage-arrow { color: var(--text-muted); font-size: 1rem; flex-shrink: 0; }
-.pipeline-badge { text-align: center; margin-top: 32px; }
-.pipeline-badge span { display: inline-block; padding: 10px 28px; border-radius: 100px; background: rgba(8,145,178,0.06); border: 1px solid rgba(8,145,178,0.15); font-size: 0.88rem; color: var(--cyan); font-weight: 600; font-family: var(--mono); }
+/* ── Pipeline (redesigned) ── */
+.pipeline-container { margin-top: 56px; }
+.pipeline-track { position: relative; display: flex; align-items: flex-start; justify-content: space-between; padding: 0 20px; }
+.pipeline-track::before {
+  content: ''; position: absolute; top: 28px; left: 60px; right: 60px;
+  height: 3px; background: var(--border); border-radius: 2px; z-index: 0;
+}
+.pipeline-track::after {
+  content: ''; position: absolute; top: 28px; left: 60px; right: 60px;
+  height: 3px; background: linear-gradient(90deg, var(--cyan), var(--blue), var(--purple));
+  border-radius: 2px; z-index: 1;
+  transform: scaleX(0); transform-origin: left;
+  transition: transform 1.5s var(--ease-out);
+}
+.pipeline-track.animate::after { transform: scaleX(1); }
+.pipe-stage { position: relative; z-index: 2; text-align: center; flex: 1; max-width: 180px; }
+.pipe-icon {
+  width: 56px; height: 56px; border-radius: 16px;
+  background: var(--card); border: 2px solid var(--border);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 14px;
+  transition: all 0.5s var(--ease);
+  box-shadow: var(--shadow-sm);
+}
+.pipe-icon svg { width: 24px; height: 24px; stroke: var(--text-muted); transition: stroke 0.4s; }
+.pipe-stage:hover .pipe-icon {
+  border-color: var(--cyan); background: var(--cyan);
+  box-shadow: 0 4px 20px rgba(8,145,178,0.25);
+  transform: translateY(-4px);
+}
+.pipe-stage:hover .pipe-icon svg { stroke: #fff; }
+.pipe-name { font-size: 0.88rem; font-weight: 700; color: var(--heading); margin-bottom: 4px; }
+.pipe-desc { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; margin-bottom: 8px; }
+.pipe-time {
+  display: inline-block; padding: 3px 10px; border-radius: 6px;
+  background: rgba(8,145,178,0.06); border: 1px solid rgba(8,145,178,0.12);
+  font-size: 0.72rem; font-family: var(--mono); font-weight: 600; color: var(--cyan);
+}
+.pipeline-summary {
+  margin-top: 48px; text-align: center;
+  display: flex; align-items: center; justify-content: center; gap: 32px;
+  flex-wrap: wrap;
+}
+.pipeline-total-badge {
+  display: inline-flex; align-items: center; gap: 10px;
+  padding: 14px 32px; border-radius: 14px;
+  background: var(--card); border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+}
+.pipeline-total-badge .total-num { font-size: 1.6rem; font-weight: 800; color: var(--cyan); font-family: var(--mono); }
+.pipeline-total-badge .total-text { font-size: 0.85rem; color: var(--text-secondary); text-align: left; line-height: 1.3; }
+.pipeline-total-badge .total-text strong { color: var(--heading); }
 
 /* ── Demo ── */
 .demo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: start; }
@@ -259,8 +300,9 @@ footer .container { display: flex; align-items: center; justify-content: space-b
   .card-grid, .roi-grid { grid-template-columns: 1fr; }
   .card-grid[style] { grid-template-columns: repeat(2, 1fr) !important; }
   .demo-grid { grid-template-columns: 1fr; }
-  .pipeline-stages { flex-direction: column; }
-  .stage-arrow { transform: rotate(90deg); }
+  .pipeline-track { flex-direction: column; align-items: center; gap: 24px; }
+  .pipeline-track::before, .pipeline-track::after { display: none; }
+  .pipe-stage { max-width: 100%; }
   .nav-links { display: none; }
   .burger { display: flex; }
   .comparison { overflow-x: auto; }
@@ -440,19 +482,55 @@ footer .container { display: flex; align-items: center; justify-content: space-b
     </div>
 
     <!-- Pipeline -->
-    <div class="pipeline-box reveal">
-      <div class="pipeline-stages">
-        <div class="pipeline-stage"><div class="stage-num">1</div><div class="stage-name">Enrich</div><div class="stage-time">&lt; 20ms</div></div>
-        <span class="stage-arrow">→</span>
-        <div class="pipeline-stage"><div class="stage-num">2</div><div class="stage-name">Score Churn</div><div class="stage-time">&lt; 30ms</div></div>
-        <span class="stage-arrow">→</span>
-        <div class="pipeline-stage"><div class="stage-num">3</div><div class="stage-name">Eligibility</div><div class="stage-time">&lt; 40ms</div></div>
-        <span class="stage-arrow">→</span>
-        <div class="pipeline-stage"><div class="stage-num">4</div><div class="stage-name">Rank Offers</div><div class="stage-time">&lt; 50ms</div></div>
-        <span class="stage-arrow">→</span>
-        <div class="pipeline-stage"><div class="stage-num">5</div><div class="stage-name">Respond</div><div class="stage-time">&lt; 20ms</div></div>
+    <div class="pipeline-container reveal">
+      <div class="pipeline-track" id="pipelineTrack">
+        <div class="pipe-stage">
+          <div class="pipe-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div class="pipe-name">Enrich</div>
+          <div class="pipe-desc">Load subscriber profile from cache or BSS</div>
+          <div class="pipe-time">&lt; 20ms</div>
+        </div>
+        <div class="pipe-stage">
+          <div class="pipe-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+          </div>
+          <div class="pipe-name">Score Churn</div>
+          <div class="pipe-desc">LightGBM model predicts churn probability</div>
+          <div class="pipe-time">&lt; 30ms</div>
+        </div>
+        <div class="pipe-stage">
+          <div class="pipe-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          </div>
+          <div class="pipe-name">Eligibility</div>
+          <div class="pipe-desc">Catalog graph + compliance rules per market</div>
+          <div class="pipe-time">&lt; 40ms</div>
+        </div>
+        <div class="pipe-stage">
+          <div class="pipe-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          </div>
+          <div class="pipe-name">Rank Offers</div>
+          <div class="pipe-desc">Multi-objective: retention &times; margin &times; context</div>
+          <div class="pipe-time">&lt; 50ms</div>
+        </div>
+        <div class="pipe-stage">
+          <div class="pipe-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <div class="pipe-name">Respond</div>
+          <div class="pipe-desc">Script hints, deep links, audit trail</div>
+          <div class="pipe-time">&lt; 20ms</div>
+        </div>
       </div>
-      <div class="pipeline-badge"><span>&lt; 200ms p99 — fast enough for live voice and chat</span></div>
+      <div class="pipeline-summary">
+        <div class="pipeline-total-badge">
+          <div class="total-num">&lt;200ms</div>
+          <div class="total-text"><strong>End-to-end p99</strong><br>Fast enough for live voice and chat</div>
+        </div>
+      </div>
     </div>
   </div>
 </section>
@@ -697,6 +775,13 @@ function hl(j) {
 }
 
 setTimeout(runDemo, 600);
+
+/* Pipeline animation */
+const pipeObs = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) e.target.classList.add('animate');
+}), { threshold: 0.3 });
+const pt = document.getElementById('pipelineTrack');
+if (pt) pipeObs.observe(pt);
 </script>
 </body>
 </html>
