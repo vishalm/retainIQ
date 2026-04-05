@@ -3,528 +3,890 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RetainIQ — Real-time VAS Offer Decisioning for Telecom</title>
-<meta name="description" content="Ranked, margin-aware, compliant retention offers in under 200ms. Integrated in hours, not months.">
+<title>RetainIQ — The Decision Engine Behind Every Saved Subscriber</title>
+<meta name="description" content="Real-time VAS offer decisioning for telecom operators. Ranked, margin-aware, compliant offers in under 200ms.">
+<meta name="theme-color" content="#000000">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><circle cx='16' cy='16' r='14' fill='%230ea5e9'/><text x='16' y='22' text-anchor='middle' font-size='18' fill='white' font-family='system-ui' font-weight='bold'>R</text></svg>">
 <style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-:root{--bg:#0a0f1e;--card:#111827;--border:#1f2937;--cyan:#0ea5e9;--green:#22c55e;--text:#e2e8f0;--muted:#94a3b8;--red:#ef4444;--orange:#f59e0b}
-html{scroll-behavior:smooth}
-body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
-a{color:var(--cyan);text-decoration:none}
-a:hover{text-decoration:underline}
-.container{max-width:1200px;margin:0 auto;padding:0 24px}
-section{padding:100px 0}
+/* ═══════════════════════════════════════════════════════════
+   RetainIQ — Apple/Google-tier Product Page
+   Design: Dark, minimal, generous whitespace, fluid motion
+   ═══════════════════════════════════════════════════════════ */
 
-/* Animations */
-@keyframes glow{0%,100%{text-shadow:0 0 20px rgba(14,165,233,.3),0 0 40px rgba(14,165,233,.1)}50%{text-shadow:0 0 30px rgba(14,165,233,.5),0 0 60px rgba(14,165,233,.2)}}
-@keyframes fadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
-@keyframes countUp{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-@keyframes typing{from{width:0}to{width:100%}}
-@keyframes blink{0%,100%{border-color:var(--cyan)}50%{border-color:transparent}}
-@keyframes flowDash{to{stroke-dashoffset:0}}
-@keyframes gradientMove{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-.reveal{opacity:0;transform:translateY(40px);transition:opacity .8s ease,transform .8s ease}
-.reveal.visible{opacity:1;transform:translateY(0)}
-.reveal-delay-1{transition-delay:.1s}
-.reveal-delay-2{transition-delay:.2s}
-.reveal-delay-3{transition-delay:.3s}
+:root {
+  --black: #000000;
+  --bg: #050505;
+  --surface: #0a0a0a;
+  --card: #111111;
+  --card-hover: #161616;
+  --border: rgba(255,255,255,0.06);
+  --border-hover: rgba(255,255,255,0.12);
+  --white: #fafafa;
+  --gray-100: #e5e5e5;
+  --gray-200: #d4d4d4;
+  --gray-300: #a3a3a3;
+  --gray-400: #737373;
+  --gray-500: #525252;
+  --gray-600: #404040;
+  --gray-700: #262626;
+  --gray-800: #171717;
+  --cyan: #06b6d4;
+  --cyan-light: #22d3ee;
+  --cyan-glow: rgba(6, 182, 212, 0.15);
+  --green: #10b981;
+  --green-light: #34d399;
+  --blue: #3b82f6;
+  --purple: #8b5cf6;
+  --orange: #f59e0b;
+  --red: #ef4444;
+  --font: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --mono: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+  --ease: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
 
-/* Hero */
-.hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,#0a0f1e 0%,#0c1929 30%,#0a1a2e 60%,#0d1f35 100%);background-size:300% 300%;animation:gradientMove 12s ease infinite;z-index:0}
-.hero::after{content:'';position:absolute;top:-50%;right:-30%;width:800px;height:800px;border-radius:50%;background:radial-gradient(circle,rgba(14,165,233,.08) 0%,transparent 70%);z-index:0}
-.hero .container{position:relative;z-index:1;text-align:center}
-.hero-logo{font-size:clamp(3rem,8vw,5rem);font-weight:800;letter-spacing:-.02em;animation:glow 3s ease-in-out infinite;color:#fff;margin-bottom:16px}
-.hero-logo span{color:var(--cyan)}
-.hero-tagline{font-size:clamp(1.1rem,3vw,1.5rem);color:var(--muted);max-width:700px;margin:0 auto 12px}
-.hero-sub{font-size:clamp(.9rem,2vw,1.1rem);color:var(--muted);max-width:650px;margin:0 auto 48px;opacity:.8}
-.hero-ctas{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:64px}
-.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:8px;font-size:1rem;font-weight:600;border:none;cursor:pointer;transition:all .3s ease}
-.btn-primary{background:var(--cyan);color:#0a0f1e}
-.btn-primary:hover{background:#38bdf8;transform:translateY(-2px);box-shadow:0 8px 30px rgba(14,165,233,.3);text-decoration:none}
-.btn-secondary{background:transparent;color:var(--cyan);border:1px solid var(--cyan)}
-.btn-secondary:hover{background:rgba(14,165,233,.1);transform:translateY(-2px);text-decoration:none}
-.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;max-width:800px;margin:0 auto}
-.hero-stat{text-align:center}
-.hero-stat-value{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;color:var(--cyan);font-variant-numeric:tabular-nums}
-.hero-stat-label{font-size:.85rem;color:var(--muted);margin-top:4px}
+html { scroll-behavior: smooth; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+body { font-family: var(--font); background: var(--bg); color: var(--gray-200); line-height: 1.7; overflow-x: hidden; }
+a { color: var(--cyan); text-decoration: none; transition: color 0.2s; }
+a:hover { color: var(--cyan-light); }
+img { max-width: 100%; }
+::selection { background: var(--cyan); color: var(--black); }
 
-/* Problem */
-.section-title{font-size:clamp(1.8rem,5vw,2.8rem);font-weight:800;text-align:center;margin-bottom:16px;color:#fff}
-.section-subtitle{text-align:center;color:var(--muted);max-width:600px;margin:0 auto 60px;font-size:1.1rem}
-.problem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
-.problem-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:40px 32px;text-align:center;transition:all .4s ease}
-.problem-card:hover{transform:translateY(-8px);border-color:var(--cyan);box-shadow:0 20px 60px rgba(14,165,233,.1)}
-.problem-icon{width:64px;height:64px;margin:0 auto 24px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;background:rgba(14,165,233,.1);color:var(--cyan)}
-.problem-card h3{font-size:1.3rem;margin-bottom:12px;color:#fff}
-.problem-card p{color:var(--muted);font-size:.95rem}
+.container { max-width: 1120px; margin: 0 auto; padding: 0 32px; }
+section { padding: 140px 0; position: relative; }
 
-/* How It Works */
-.steps{max-width:700px;margin:0 auto 60px;position:relative}
-.steps::before{content:'';position:absolute;left:24px;top:0;bottom:0;width:2px;background:var(--border)}
-.step{display:flex;gap:24px;margin-bottom:32px;position:relative}
-.step-num{width:48px;height:48px;min-width:48px;border-radius:50%;background:var(--card);border:2px solid var(--cyan);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--cyan);font-size:.9rem;z-index:1}
-.step-content h4{font-size:1.05rem;color:#fff;margin-bottom:4px}
-.step-content p{color:var(--muted);font-size:.9rem}
-.terminal{background:#0d1117;border:1px solid var(--border);border-radius:12px;overflow:hidden;max-width:800px;margin:0 auto}
-.terminal-bar{background:#161b22;padding:10px 16px;display:flex;align-items:center;gap:8px}
-.terminal-dot{width:12px;height:12px;border-radius:50%}
-.terminal-dot:nth-child(1){background:#ff5f57}
-.terminal-dot:nth-child(2){background:#febc2e}
-.terminal-dot:nth-child(3){background:#28c840}
-.terminal-title{color:var(--muted);font-size:.8rem;margin-left:12px;font-family:monospace}
-.terminal-body{padding:24px;font-family:'SF Mono',SFMono-Regular,Consolas,monospace;font-size:.82rem;line-height:1.7;overflow-x:auto}
-.terminal-body .key{color:#7ee787}
-.terminal-body .str{color:#a5d6ff}
-.terminal-body .num{color:#f5a623}
-.terminal-body .punct{color:var(--muted)}
-.terminal-body .comment{color:#6e7681}
-.terminal-body .label{color:var(--cyan);font-weight:700;display:block;margin-bottom:8px}
-.terminal-cursor{display:inline-block;width:8px;height:16px;background:var(--cyan);animation:pulse 1s infinite;vertical-align:middle}
-.json-section{margin-bottom:16px}
+/* ── Typography ── */
+h1, h2, h3 { color: var(--white); letter-spacing: -0.03em; line-height: 1.15; }
+h1 { font-size: clamp(3rem, 7vw, 5.5rem); font-weight: 700; }
+h2 { font-size: clamp(2rem, 4.5vw, 3.5rem); font-weight: 700; }
+h3 { font-size: 1.25rem; font-weight: 600; }
+.eyebrow { font-size: 0.8rem; font-weight: 600; letter-spacing: 0.15em; text-transform: uppercase; color: var(--cyan); margin-bottom: 16px; display: inline-block; }
+.subtitle { font-size: clamp(1.1rem, 2.5vw, 1.35rem); color: var(--gray-300); max-width: 640px; line-height: 1.7; }
+.section-header { text-align: center; margin-bottom: 80px; }
+.section-header .subtitle { margin: 20px auto 0; }
 
-/* Demo */
-.demo-section{background:linear-gradient(180deg,var(--bg) 0%,#0d1520 100%)}
-.demo-layout{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start}
-.demo-form{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px}
-.form-group{margin-bottom:20px}
-.form-group label{display:block;font-size:.85rem;color:var(--muted);margin-bottom:6px;font-weight:500}
-.form-group input,.form-group select{width:100%;padding:12px 16px;background:#0a0f1e;border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.95rem;font-family:inherit;transition:border-color .3s}
-.form-group input:focus,.form-group select:focus{outline:none;border-color:var(--cyan)}
-.slider-wrapper{display:flex;align-items:center;gap:12px}
-.slider-wrapper input[type=range]{flex:1;-webkit-appearance:none;height:6px;border-radius:3px;background:var(--border);outline:none}
-.slider-wrapper input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--cyan);cursor:pointer}
-.slider-value{font-weight:700;color:var(--cyan);min-width:36px;text-align:right}
-.demo-response{background:#0d1117;border:1px solid var(--border);border-radius:16px;overflow:hidden;min-height:400px}
-.demo-response-bar{background:#161b22;padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
-.demo-response-bar span{font-size:.8rem;color:var(--muted);font-family:monospace}
-.latency-badge{background:rgba(34,197,94,.15);color:var(--green);padding:4px 10px;border-radius:6px;font-size:.75rem;font-weight:600}
-.demo-response-body{padding:20px;font-family:'SF Mono',SFMono-Regular,Consolas,monospace;font-size:.78rem;line-height:1.7;overflow-x:auto;white-space:pre-wrap;max-height:500px;overflow-y:auto}
-.demo-response-body .key{color:#7ee787}
-.demo-response-body .str{color:#a5d6ff}
-.demo-response-body .num{color:#f5a623}
-.demo-response-body .bool{color:#f97583}
-.demo-response-body .null{color:#6e7681}
-.btn-demo{width:100%;padding:14px;font-size:1rem}
-.btn-loading{opacity:.7;pointer-events:none}
+/* ── Scroll Reveal ── */
+.reveal { opacity: 0; transform: translateY(60px); transition: opacity 1s var(--ease-out), transform 1s var(--ease-out); }
+.reveal.visible { opacity: 1; transform: none; }
+.reveal-d1 { transition-delay: 0.1s; }
+.reveal-d2 { transition-delay: 0.2s; }
+.reveal-d3 { transition-delay: 0.3s; }
+.reveal-d4 { transition-delay: 0.4s; }
+.reveal-d5 { transition-delay: 0.5s; }
 
-/* Architecture */
-.arch-visual{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;margin-bottom:48px}
-.arch-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px 28px;text-align:center;min-width:160px;transition:all .3s}
-.arch-box:hover{border-color:var(--cyan)}
-.arch-box h4{font-size:1rem;color:#fff;margin-bottom:4px}
-.arch-box p{font-size:.8rem;color:var(--muted)}
-.arch-box.highlight{border-color:var(--cyan);box-shadow:0 0 30px rgba(14,165,233,.15)}
-.arch-arrow{color:var(--cyan);font-size:2rem;padding:0 16px;animation:pulse 2s infinite}
-.arch-text{text-align:center;color:var(--muted);font-size:1.05rem;margin-bottom:32px;max-width:600px;margin-left:auto;margin-right:auto}
-.integrations{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
-.integration-tag{background:rgba(14,165,233,.1);color:var(--cyan);padding:8px 20px;border-radius:8px;font-size:.9rem;border:1px solid rgba(14,165,233,.2)}
+/* ── Navigation ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  padding: 20px 0;
+  transition: all 0.4s var(--ease);
+  backdrop-filter: blur(0px);
+  -webkit-backdrop-filter: blur(0px);
+}
+nav.scrolled {
+  padding: 12px 0;
+  background: rgba(5,5,5,0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+nav .container { display: flex; align-items: center; justify-content: space-between; }
+.nav-logo { font-size: 1.3rem; font-weight: 700; color: var(--white); display: flex; align-items: center; gap: 10px; }
+.nav-logo-icon { width: 32px; height: 32px; background: var(--cyan); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 0.9rem; font-weight: 800; color: var(--black); }
+.nav-links { display: flex; align-items: center; gap: 36px; }
+.nav-links a { color: var(--gray-300); font-size: 0.9rem; font-weight: 500; transition: color 0.2s; }
+.nav-links a:hover { color: var(--white); }
+.nav-cta { padding: 8px 20px; background: var(--white); color: var(--black); border-radius: 8px; font-size: 0.85rem; font-weight: 600; transition: all 0.3s var(--ease); }
+.nav-cta:hover { background: var(--cyan); color: var(--black); transform: translateY(-1px); }
 
-/* ROI */
-.roi-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-bottom:60px}
-.roi-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px 24px;text-align:center;transition:all .3s}
-.roi-card:hover{border-color:var(--green);box-shadow:0 12px 40px rgba(34,197,94,.08)}
-.roi-value{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;color:var(--green);margin-bottom:8px}
-.roi-label{font-size:.9rem;color:var(--muted)}
-.comparison-table{width:100%;border-collapse:collapse;max-width:900px;margin:0 auto}
-.comparison-table th,.comparison-table td{padding:16px 20px;text-align:left;border-bottom:1px solid var(--border)}
-.comparison-table th{color:var(--muted);font-size:.85rem;text-transform:uppercase;letter-spacing:.05em;font-weight:500}
-.comparison-table td:first-child{color:#fff;font-weight:600}
-.comparison-table td:nth-child(2){color:var(--muted)}
-.comparison-table td:nth-child(3){color:var(--green)}
-.comparison-table thead th{background:var(--card);position:sticky;top:0}
-.comparison-table tr:hover td{background:rgba(14,165,233,.03)}
+/* ── Hero ── */
+.hero {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+  padding-top: 80px;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse 80% 50% at 50% -20%, rgba(6,182,212,0.12), transparent),
+              radial-gradient(ellipse 60% 40% at 80% 60%, rgba(59,130,246,0.06), transparent);
+}
+.hero-grid {
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 60px 60px;
+  mask-image: radial-gradient(ellipse 60% 50% at 50% 50%, black, transparent);
+  -webkit-mask-image: radial-gradient(ellipse 60% 50% at 50% 50%, black, transparent);
+}
+.hero-content { position: relative; z-index: 1; text-align: center; max-width: 900px; }
+.hero h1 { margin-bottom: 24px; }
+.hero h1 .gradient {
+  background: linear-gradient(135deg, var(--cyan) 0%, var(--blue) 50%, var(--purple) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero .subtitle { margin: 0 auto 48px; max-width: 580px; }
+.hero-ctas { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 80px; }
 
-/* Pricing */
-.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:960px;margin:0 auto 40px}
-.pricing-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:40px 32px;transition:all .3s}
-.pricing-card:hover{border-color:var(--cyan);transform:translateY(-4px)}
-.pricing-card.featured{border-color:var(--cyan);position:relative}
-.pricing-card.featured::before{content:'POPULAR';position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--cyan);color:#0a0f1e;padding:4px 16px;border-radius:6px;font-size:.7rem;font-weight:700;letter-spacing:.05em}
-.pricing-tier{font-size:.85rem;color:var(--cyan);text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:8px}
-.pricing-name{font-size:1.5rem;font-weight:700;color:#fff;margin-bottom:16px}
-.pricing-features{list-style:none;margin-bottom:32px}
-.pricing-features li{padding:8px 0;color:var(--muted);font-size:.9rem;display:flex;align-items:center;gap:8px}
-.pricing-features li::before{content:'\2713';color:var(--green);font-weight:700}
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 16px 36px; border-radius: 12px;
+  font-size: 1rem; font-weight: 600; border: none;
+  cursor: pointer; transition: all 0.4s var(--ease);
+  text-decoration: none;
+}
+.btn-glow {
+  background: var(--white); color: var(--black);
+  box-shadow: 0 0 0 1px rgba(255,255,255,0.1), 0 4px 20px rgba(0,0,0,0.3);
+}
+.btn-glow:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 1px rgba(6,182,212,0.3), 0 8px 40px rgba(6,182,212,0.2);
+}
+.btn-ghost {
+  background: transparent; color: var(--gray-200);
+  border: 1px solid var(--border-hover);
+}
+.btn-ghost:hover { border-color: var(--gray-400); transform: translateY(-2px); color: var(--white); }
 
-/* Footer */
-footer{border-top:1px solid var(--border);padding:48px 0;text-align:center}
-footer .footer-logo{font-size:1.3rem;font-weight:700;color:#fff;margin-bottom:16px}
-footer .footer-logo span{color:var(--cyan)}
-.footer-links{display:flex;gap:32px;justify-content:center;margin-bottom:24px;flex-wrap:wrap}
-.footer-links a{color:var(--muted);font-size:.9rem}
-.footer-links a:hover{color:var(--cyan)}
-.footer-note{color:var(--muted);font-size:.8rem;opacity:.7}
+/* Hero Stats */
+.hero-metrics {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  overflow: hidden;
+  max-width: 720px; margin: 0 auto;
+}
+.hero-metric {
+  background: var(--surface);
+  padding: 32px 16px;
+  text-align: center;
+  transition: background 0.3s;
+}
+.hero-metric:hover { background: var(--card); }
+.hero-metric-value {
+  font-size: 2rem; font-weight: 800; color: var(--white);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+.hero-metric-value.cyan { color: var(--cyan); }
+.hero-metric-value.green { color: var(--green); }
+.hero-metric-label { font-size: 0.75rem; color: var(--gray-400); margin-top: 4px; font-weight: 500; }
 
-/* Churn score colors */
-.churn-high{color:var(--red)}
-.churn-med{color:var(--orange)}
-.churn-low{color:var(--green)}
+/* ── Problem Section ── */
+.problem { background: var(--surface); }
+.problem-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; background: var(--border); border-radius: 20px; overflow: hidden; }
+.problem-card {
+  background: var(--bg);
+  padding: 48px 40px;
+  transition: all 0.5s var(--ease);
+  position: relative;
+  overflow: hidden;
+}
+.problem-card::before {
+  content: ''; position: absolute; top: 0; left: 0; right: 0;
+  height: 2px; background: linear-gradient(90deg, transparent, var(--red), transparent);
+  opacity: 0; transition: opacity 0.5s;
+}
+.problem-card:hover { background: var(--card); }
+.problem-card:hover::before { opacity: 1; }
+.problem-icon { font-size: 2rem; margin-bottom: 20px; display: block; }
+.problem-card h3 { margin-bottom: 12px; }
+.problem-card p { color: var(--gray-400); font-size: 0.95rem; line-height: 1.7; }
 
-/* Mobile */
-@media(max-width:768px){
-  .hero-stats{grid-template-columns:repeat(2,1fr)}
-  .problem-grid,.roi-metrics{grid-template-columns:1fr}
-  .demo-layout{grid-template-columns:1fr}
-  .pricing-grid{grid-template-columns:1fr;max-width:400px}
-  .arch-visual{flex-direction:column}
-  .arch-arrow{transform:rotate(90deg);padding:8px 0}
-  section{padding:60px 0}
-  .comparison-table{font-size:.85rem}
-  .comparison-table th,.comparison-table td{padding:10px 12px}
+/* ── Solution / Pipeline ── */
+.pipeline-visual {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 60px 48px;
+  margin-top: 60px;
+  position: relative;
+  overflow: hidden;
+}
+.pipeline-visual::before {
+  content: ''; position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+  width: 200px; height: 200px;
+  background: radial-gradient(circle, var(--cyan-glow), transparent);
+  filter: blur(60px);
+}
+.pipeline-stages {
+  display: flex; align-items: center; justify-content: center; gap: 0;
+  position: relative; z-index: 1;
+  flex-wrap: wrap;
+}
+.pipeline-stage {
+  text-align: center; padding: 20px 16px;
+  position: relative; flex: 1; min-width: 140px;
+}
+.stage-num {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: var(--gray-800); border: 2px solid var(--border-hover);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 0.8rem; font-weight: 700; color: var(--cyan);
+  margin: 0 auto 12px;
+  transition: all 0.4s var(--ease);
+}
+.pipeline-stage:hover .stage-num {
+  background: var(--cyan); border-color: var(--cyan); color: var(--black);
+  box-shadow: 0 0 20px var(--cyan-glow);
+}
+.stage-name { font-size: 0.85rem; font-weight: 600; color: var(--white); margin-bottom: 4px; }
+.stage-time { font-size: 0.75rem; color: var(--gray-400); font-family: var(--mono); }
+.stage-arrow { color: var(--gray-600); font-size: 1.2rem; flex-shrink: 0; }
+
+.pipeline-total {
+  text-align: center; margin-top: 40px;
+  padding: 16px 32px; border-radius: 100px;
+  background: rgba(6,182,212,0.08); border: 1px solid rgba(6,182,212,0.15);
+  display: inline-block; position: relative; z-index: 1;
+}
+.pipeline-total span { color: var(--cyan); font-weight: 700; font-family: var(--mono); }
+
+/* ── Interactive Demo ── */
+.demo { background: var(--surface); }
+.demo-container {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 40px;
+  align-items: start;
+}
+.demo-form {
+  background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+  padding: 36px;
+}
+.demo-form h3 { margin-bottom: 24px; }
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; font-size: 0.8rem; font-weight: 500; color: var(--gray-400); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+.form-group input, .form-group select {
+  width: 100%; padding: 12px 16px;
+  background: var(--bg); border: 1px solid var(--border);
+  border-radius: 10px; color: var(--white);
+  font-family: var(--font); font-size: 0.95rem;
+  transition: border-color 0.3s;
+  outline: none;
+}
+.form-group input:focus, .form-group select:focus { border-color: var(--cyan); }
+.form-group select { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23737373' viewBox='0 0 16 16'%3E%3Cpath d='m4.5 6.5 3.5 3.5 3.5-3.5'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 36px; }
+.slider-row { display: flex; align-items: center; gap: 12px; }
+.slider-row input[type=range] { flex: 1; accent-color: var(--cyan); height: 4px; }
+.slider-val { font-family: var(--mono); font-size: 0.85rem; color: var(--cyan); min-width: 36px; text-align: right; }
+.btn-demo {
+  width: 100%; padding: 16px; margin-top: 8px;
+  background: linear-gradient(135deg, var(--cyan), var(--blue));
+  color: var(--white); font-weight: 700; font-size: 1rem;
+  border: none; border-radius: 12px; cursor: pointer;
+  transition: all 0.4s var(--ease);
+}
+.btn-demo:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(6,182,212,0.3); }
+.btn-demo:active { transform: translateY(0); }
+
+.demo-response {
+  background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+  overflow: hidden;
+}
+.demo-response-header {
+  padding: 16px 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  background: var(--gray-800);
+}
+.demo-response-header .status { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; font-weight: 600; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+.demo-response-header .latency { font-family: var(--mono); font-size: 0.8rem; color: var(--green); }
+.demo-json {
+  padding: 24px;
+  font-family: var(--mono); font-size: 0.78rem; line-height: 1.8;
+  color: var(--gray-300);
+  max-height: 520px; overflow-y: auto;
+  white-space: pre-wrap; word-break: break-all;
+}
+.demo-json .key { color: var(--cyan-light); }
+.demo-json .str { color: var(--green-light); }
+.demo-json .num { color: var(--orange); }
+.demo-json .bool { color: var(--purple); }
+
+/* ── ROI Section ── */
+.roi-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+  margin-bottom: 80px;
+}
+.roi-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+  padding: 36px 28px; text-align: center;
+  transition: all 0.5s var(--ease);
+  position: relative; overflow: hidden;
+}
+.roi-card::after {
+  content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+  height: 3px; transition: opacity 0.4s; opacity: 0;
+}
+.roi-card:hover { border-color: var(--border-hover); transform: translateY(-4px); }
+.roi-card:hover::after { opacity: 1; }
+.roi-card:nth-child(1)::after { background: var(--green); }
+.roi-card:nth-child(2)::after { background: var(--purple); }
+.roi-card:nth-child(3)::after { background: var(--cyan); }
+.roi-card:nth-child(4)::after { background: var(--orange); }
+.roi-value {
+  font-size: 3rem; font-weight: 800; line-height: 1;
+  margin-bottom: 8px; letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+}
+.roi-card:nth-child(1) .roi-value { color: var(--green); }
+.roi-card:nth-child(2) .roi-value { color: var(--purple); }
+.roi-card:nth-child(3) .roi-value { color: var(--cyan); }
+.roi-card:nth-child(4) .roi-value { color: var(--orange); }
+.roi-label { font-size: 0.85rem; color: var(--gray-400); font-weight: 500; }
+
+/* Before/After Table */
+.comparison {
+  background: var(--card); border: 1px solid var(--border); border-radius: 16px;
+  overflow: hidden;
+}
+.comparison table { width: 100%; border-collapse: collapse; }
+.comparison th, .comparison td { padding: 20px 28px; text-align: left; font-size: 0.9rem; }
+.comparison thead { background: var(--gray-800); }
+.comparison th { font-weight: 600; color: var(--gray-300); font-size: 0.8rem; letter-spacing: 0.05em; text-transform: uppercase; }
+.comparison th:nth-child(3) { color: var(--cyan); }
+.comparison tbody tr { border-top: 1px solid var(--border); transition: background 0.2s; }
+.comparison tbody tr:hover { background: rgba(255,255,255,0.02); }
+.comparison td:first-child { font-weight: 500; color: var(--gray-300); }
+.comparison td:nth-child(2) { color: var(--gray-500); }
+.comparison td:nth-child(3) { color: var(--green-light); font-weight: 500; }
+
+/* ── Integrations ── */
+.integrations-grid {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px;
+  margin-top: 60px;
+}
+.integration-card {
+  background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+  padding: 32px 24px; text-align: center;
+  transition: all 0.4s var(--ease);
+}
+.integration-card:hover { border-color: var(--border-hover); transform: translateY(-4px); }
+.integration-icon { font-size: 2.5rem; margin-bottom: 12px; display: block; }
+.integration-card h3 { font-size: 1rem; margin-bottom: 4px; }
+.integration-card p { font-size: 0.8rem; color: var(--gray-400); }
+.integration-time { font-family: var(--mono); color: var(--cyan); font-size: 0.8rem; font-weight: 600; margin-top: 12px; }
+
+/* ── CTA Section ── */
+.cta-section {
+  text-align: center;
+  background: var(--surface);
+  position: relative; overflow: hidden;
+}
+.cta-section::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse 60% 50% at 50% 100%, rgba(6,182,212,0.08), transparent);
+}
+.cta-section .container { position: relative; z-index: 1; }
+.cta-section h2 { margin-bottom: 20px; }
+.cta-section .subtitle { margin: 0 auto 48px; }
+.cta-buttons { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+/* ── Footer ── */
+footer {
+  padding: 60px 0;
+  border-top: 1px solid var(--border);
+}
+footer .container { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 24px; }
+.footer-left { display: flex; align-items: center; gap: 10px; }
+.footer-logo { font-weight: 700; color: var(--white); }
+.footer-copy { font-size: 0.8rem; color: var(--gray-500); }
+.footer-links { display: flex; gap: 28px; }
+.footer-links a { font-size: 0.85rem; color: var(--gray-400); }
+.footer-links a:hover { color: var(--white); }
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  section { padding: 80px 0; }
+  .hero-metrics { grid-template-columns: repeat(2, 1fr); }
+  .problem-grid, .roi-grid, .integrations-grid { grid-template-columns: 1fr; }
+  .demo-container { grid-template-columns: 1fr; }
+  .pipeline-stages { flex-direction: column; }
+  .stage-arrow { transform: rotate(90deg); }
+  .nav-links { display: none; }
+  .comparison { overflow-x: auto; }
 }
 </style>
 </head>
 <body>
 
-<!-- Hero -->
-<section class="hero" id="hero">
-<div class="container">
-  <div class="hero-logo">Retain<span>IQ</span></div>
-  <p class="hero-tagline">Real-time VAS offer decisioning for telecom operators</p>
-  <p class="hero-sub">Ranked, margin-aware, compliant retention offers in under 200ms &mdash; integrated in hours, not months</p>
-  <div class="hero-ctas">
-    <a href="#demo" class="btn btn-primary">See Live Demo</a>
-    <a href="https://github.com" class="btn btn-secondary" target="_blank">View Documentation</a>
-  </div>
-  <div class="hero-stats">
-    <div class="hero-stat"><div class="hero-stat-value" data-target="200" data-prefix="< " data-suffix="ms">&nbsp;</div><div class="hero-stat-label">p99 latency</div></div>
-    <div class="hero-stat"><div class="hero-stat-value" data-target="34" data-suffix="%">&nbsp;</div><div class="hero-stat-label">attach rate</div></div>
-    <div class="hero-stat"><div class="hero-stat-value" data-target="4" data-suffix="h">&nbsp;</div><div class="hero-stat-label">integration</div></div>
-    <div class="hero-stat"><div class="hero-stat-value" data-target="24" data-suffix="mo">&nbsp;</div><div class="hero-stat-label">audit trail</div></div>
-  </div>
-</div>
-</section>
-
-<!-- Problem -->
-<section id="problem">
-<div class="container">
-  <h2 class="section-title reveal">The Retention Problem</h2>
-  <p class="section-subtitle reveal">Every lost subscriber costs 5-7x more to replace than to retain. Yet most operators still fight churn with blunt tools.</p>
-  <div class="problem-grid">
-    <div class="problem-card reveal reveal-delay-1">
-      <div class="problem-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-      <h3>Slow Offers</h3>
-      <p>Agents improvise or read static scripts. By the time they find the right offer, the customer has already decided to leave.</p>
-    </div>
-    <div class="problem-card reveal reveal-delay-2">
-      <div class="problem-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
-      <h3>Margin Blind</h3>
-      <p>"Save at any cost" destroys profitability. Agents give away the highest-value offer to every subscriber regardless of risk.</p>
-    </div>
-    <div class="problem-card reveal reveal-delay-3">
-      <div class="problem-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6m0 8v6M4.93 4.93l4.24 4.24m5.66 5.66l4.24 4.24M2 12h6m8 0h6M4.93 19.07l4.24-4.24m5.66-5.66l4.24-4.24"/></svg></div>
-      <h3>Integration Tax</h3>
-      <p>Months of system integrator work for each new channel. By the time it's live, the business need has changed.</p>
+<!-- ═══ Navigation ═══ -->
+<nav id="nav">
+  <div class="container">
+    <a href="#" class="nav-logo">
+      <div class="nav-logo-icon">R</div>
+      RetainIQ
+    </a>
+    <div class="nav-links">
+      <a href="#problem">Problem</a>
+      <a href="#solution">Solution</a>
+      <a href="#stack">Architecture</a>
+      <a href="#demo">Demo</a>
+      <a href="#roi">ROI</a>
+      <a href="https://github.com/vishalm/retainIQ" class="nav-cta">GitHub</a>
     </div>
   </div>
-</div>
+</nav>
+
+<!-- ═══ Hero ═══ -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="container hero-content">
+    <p class="eyebrow reveal">Real-Time Decisioning Engine</p>
+    <h1 class="reveal reveal-d1">
+      Every subscriber<br>deserves the <span class="gradient">right offer.</span>
+    </h1>
+    <p class="subtitle reveal reveal-d2">
+      RetainIQ scores churn, ranks VAS offers by retention and margin,
+      and returns compliant results in under 200ms — so your agents
+      always know what to say.
+    </p>
+    <div class="hero-ctas reveal reveal-d3">
+      <a href="#demo" class="btn btn-glow">Try the Live Demo</a>
+      <a href="https://github.com/vishalm/retainIQ/blob/main/docs/quickstart.md" class="btn btn-ghost">Documentation →</a>
+    </div>
+    <div class="hero-metrics reveal reveal-d4">
+      <div class="hero-metric">
+        <div class="hero-metric-value cyan" data-count="200" data-prefix="<" data-suffix="ms">0</div>
+        <div class="hero-metric-label">P99 Latency</div>
+      </div>
+      <div class="hero-metric">
+        <div class="hero-metric-value green" data-count="34" data-suffix="%">0</div>
+        <div class="hero-metric-label">Offer Attach Rate</div>
+      </div>
+      <div class="hero-metric">
+        <div class="hero-metric-value cyan" data-count="4" data-suffix="h">0</div>
+        <div class="hero-metric-label">Integration Time</div>
+      </div>
+      <div class="hero-metric">
+        <div class="hero-metric-value green" data-count="24" data-suffix="mo">0</div>
+        <div class="hero-metric-label">Audit Retention</div>
+      </div>
+    </div>
+  </div>
 </section>
 
-<!-- How It Works -->
-<section id="how-it-works">
-<div class="container">
-  <h2 class="section-title reveal">One API Call. Three Ranked Offers.</h2>
-  <p class="section-subtitle reveal">RetainIQ does the hard work in under 200ms so your agents and bots can focus on empathy.</p>
-  <div class="steps">
-    <div class="step reveal reveal-delay-1"><div class="step-num">1</div><div class="step-content"><h4>Channel sends subscriber_id + signals</h4><p>Works from any channel: agent desktop, chatbot, IVR, or app.</p></div></div>
-    <div class="step reveal reveal-delay-1"><div class="step-num">2</div><div class="step-content"><h4>Enriches from cache/BSS</h4><p>Subscriber profile, usage, tenure, billing &mdash; all in &lt; 20ms from warm cache.</p></div></div>
-    <div class="step reveal reveal-delay-2"><div class="step-num">3</div><div class="step-content"><h4>Churn model scores risk</h4><p>Gradient-boosted model trained on your data. Scores in &lt; 30ms.</p></div></div>
-    <div class="step reveal reveal-delay-2"><div class="step-num">4</div><div class="step-content"><h4>Catalog graph filters eligible offers</h4><p>Regulatory, plan compatibility, and cooldown rules applied automatically.</p></div></div>
-    <div class="step reveal reveal-delay-3"><div class="step-num">5</div><div class="step-content"><h4>Multi-objective ranker scores: retention &times; margin</h4><p>Pareto-optimal offers that maximize save rate without destroying margin.</p></div></div>
-    <div class="step reveal reveal-delay-3"><div class="step-num">6</div><div class="step-content"><h4>Response with script hints + deep links</h4><p>Agent sees talk track, customer sees personalized offer in-app.</p></div></div>
+<!-- ═══ Problem ═══ -->
+<section class="problem" id="problem">
+  <div class="container">
+    <div class="section-header">
+      <p class="eyebrow reveal">The Problem</p>
+      <h2 class="reveal reveal-d1">Retention is broken.<br>Offers are guesswork.</h2>
+      <p class="subtitle reveal reveal-d2">Every day, agents improvise. Margins erode. Compliance gaps widen. And subscribers leave anyway.</p>
+    </div>
+    <div class="problem-grid">
+      <div class="problem-card reveal">
+        <span class="problem-icon">⏱</span>
+        <h3>Slow & Inconsistent</h3>
+        <p>Agents read from static scripts or improvise in real time. Every call is different. There's no system deciding which offer fits this subscriber right now.</p>
+      </div>
+      <div class="problem-card reveal reveal-d1">
+        <span class="problem-icon">💸</span>
+        <h3>Margin Blind</h3>
+        <p>"Save the customer at any cost" destroys profitability. Without margin in the objective function, the most expensive offer always wins.</p>
+      </div>
+      <div class="problem-card reveal reveal-d2">
+        <span class="problem-icon">🔌</span>
+        <h3>Integration Tax</h3>
+        <p>Each new channel — Agentforce, Genesys, your app — requires months of SI. By the time it's live, the market has moved.</p>
+      </div>
+    </div>
   </div>
-
-  <div class="terminal reveal">
-    <div class="terminal-bar"><div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div><span class="terminal-title">POST /v1/offers &mdash; 87ms</span></div>
-    <div class="terminal-body" id="terminal-json"></div>
-  </div>
-</div>
 </section>
 
-<!-- Demo -->
-<section class="demo-section" id="demo">
-<div class="container">
-  <h2 class="section-title reveal">Try It Now</h2>
-  <p class="section-subtitle reveal">This is a simulated API response &mdash; but the format is exactly what your systems will receive.</p>
-  <div class="demo-layout">
-    <div class="demo-form reveal">
-      <div class="form-group">
-        <label>Subscriber ID</label>
-        <input type="text" id="demo-sub" value="sub_12345">
-      </div>
-      <div class="form-group">
-        <label>Channel</label>
-        <select id="demo-channel"><option value="agentforce">Salesforce Agentforce</option><option value="genesys">Genesys Cloud</option><option value="app">Mobile App</option><option value="ivr">IVR</option></select>
-      </div>
-      <div class="form-group">
-        <label>Intent</label>
-        <select id="demo-intent"><option value="cancel">Cancel</option><option value="complaint">Complaint</option><option value="billing">Billing Dispute</option><option value="upgrade">Upgrade Inquiry</option></select>
-      </div>
-      <div class="form-group">
-        <label>Frustration Score</label>
-        <div class="slider-wrapper">
-          <input type="range" id="demo-frustration" min="0" max="100" value="70">
-          <span class="slider-value" id="frustration-val">0.70</span>
+<!-- ═══ Solution ═══ -->
+<section id="solution">
+  <div class="container">
+    <div class="section-header">
+      <p class="eyebrow reveal">The Solution</p>
+      <h2 class="reveal reveal-d1">One API call.<br>Three ranked offers.</h2>
+      <p class="subtitle reveal reveal-d2">RetainIQ is a stateless decisioning layer. It doesn't replace your chatbot or BSS — it tells them what to offer.</p>
+    </div>
+    <div class="pipeline-visual reveal">
+      <div class="pipeline-stages">
+        <div class="pipeline-stage">
+          <div class="stage-num">1</div>
+          <div class="stage-name">Enrich</div>
+          <div class="stage-time">&lt; 20ms</div>
+        </div>
+        <span class="stage-arrow">→</span>
+        <div class="pipeline-stage">
+          <div class="stage-num">2</div>
+          <div class="stage-name">Score Churn</div>
+          <div class="stage-time">&lt; 30ms</div>
+        </div>
+        <span class="stage-arrow">→</span>
+        <div class="pipeline-stage">
+          <div class="stage-num">3</div>
+          <div class="stage-name">Eligibility</div>
+          <div class="stage-time">&lt; 40ms</div>
+        </div>
+        <span class="stage-arrow">→</span>
+        <div class="pipeline-stage">
+          <div class="stage-num">4</div>
+          <div class="stage-name">Rank Offers</div>
+          <div class="stage-time">&lt; 50ms</div>
+        </div>
+        <span class="stage-arrow">→</span>
+        <div class="pipeline-stage">
+          <div class="stage-num">5</div>
+          <div class="stage-name">Respond</div>
+          <div class="stage-time">&lt; 20ms</div>
         </div>
       </div>
-      <button class="btn btn-primary btn-demo" id="demo-btn" onclick="runDemo()">Get Offers</button>
-    </div>
-    <div class="demo-response reveal reveal-delay-1">
-      <div class="demo-response-bar"><span>Response</span><span class="latency-badge" id="demo-latency">&mdash;</span></div>
-      <div class="demo-response-body" id="demo-output"><span style="color:var(--muted)">// Click "Get Offers" to see the response</span></div>
+      <div style="text-align:center;margin-top:40px">
+        <div class="pipeline-total">
+          End-to-end: <span>&lt; 200ms p99</span> — fast enough for live voice and chat
+        </div>
+      </div>
     </div>
   </div>
-</div>
 </section>
 
-<!-- Architecture -->
-<section id="architecture">
-<div class="container">
-  <h2 class="section-title reveal">Fits Your Existing Stack</h2>
-  <p class="arch-text reveal">RetainIQ doesn't replace your chatbot or BSS. It sits between them.</p>
-  <div class="arch-visual reveal">
-    <div class="arch-box">
-      <h4>Channels</h4>
-      <p>Agent Desktop, Bot,<br>IVR, App</p>
+<!-- ═══ Telco Stack ═══ -->
+<section style="background:var(--surface)" id="stack">
+  <div class="container">
+    <div class="section-header">
+      <p class="eyebrow reveal">Architecture</p>
+      <h2 class="reveal reveal-d1">Where RetainIQ sits<br>in your telco stack.</h2>
+      <p class="subtitle reveal reveal-d2">A thin decisioning layer between your channels and backends. It doesn't replace anything — it makes everything smarter.</p>
     </div>
-    <div class="arch-arrow">&rarr;</div>
-    <div class="arch-box highlight">
-      <h4>Retain<span style="color:var(--cyan)">IQ</span></h4>
-      <p>Score, Rank,<br>Decide</p>
-    </div>
-    <div class="arch-arrow">&rarr;</div>
-    <div class="arch-box">
-      <h4>BSS / VAS</h4>
-      <p>Provision, Bill,<br>Activate</p>
+    <div class="stack-diagram reveal" style="max-width:900px;margin:0 auto">
+      <svg viewBox="0 0 900 420" xmlns="http://www.w3.org/2000/svg" style="width:100%">
+        <defs>
+          <style>
+            @keyframes flowRight { 0%{transform:translateX(-8px);opacity:0} 50%{opacity:1} 100%{transform:translateX(8px);opacity:0} }
+            @keyframes flowDown { 0%{transform:translateY(-8px);opacity:0} 50%{opacity:1} 100%{transform:translateY(8px);opacity:0} }
+            @keyframes pulseGlow { 0%,100%{filter:drop-shadow(0 0 6px rgba(6,182,212,0))} 50%{filter:drop-shadow(0 0 16px rgba(6,182,212,0.5))} }
+            .box{rx:12;ry:12}
+            .lbl{font-family:system-ui,sans-serif;text-anchor:middle;fill:#fafafa}
+            .sub{font-family:system-ui,sans-serif;text-anchor:middle;fill:#737373;font-size:10px}
+            .arr{stroke:#525252;stroke-width:2;fill:none;marker-end:url(#ah)}
+            .flow-r{animation:flowRight 2s ease-in-out infinite}
+            .flow-d{animation:flowDown 2s ease-in-out infinite}
+            .retainiq-glow{animation:pulseGlow 3s ease-in-out infinite}
+          </style>
+          <marker id="ah" viewBox="0 0 10 10" refX="10" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0L10 5L0 10z" fill="#525252"/></marker>
+          <linearGradient id="cg" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#0ea5e9"/><stop offset="100%" stop-color="#3b82f6"/></linearGradient>
+        </defs>
+
+        <!-- Subscriber Layer -->
+        <text x="450" y="28" class="lbl" font-size="11" fill="#737373" font-weight="600" letter-spacing="2">SUBSCRIBERS</text>
+        <rect x="100" y="40" width="120" height="44" class="box" fill="#171717" stroke="#262626"/>
+        <text x="160" y="67" class="lbl" font-size="12">📞 IVR</text>
+        <rect x="240" y="40" width="120" height="44" class="box" fill="#171717" stroke="#262626"/>
+        <text x="300" y="67" class="lbl" font-size="12">💬 Chat</text>
+        <rect x="380" y="40" width="120" height="44" class="box" fill="#171717" stroke="#262626"/>
+        <text x="440" y="67" class="lbl" font-size="12">📱 App</text>
+        <rect x="520" y="40" width="120" height="44" class="box" fill="#171717" stroke="#262626"/>
+        <text x="580" y="67" class="lbl" font-size="12">🌐 Web</text>
+        <rect x="660" y="40" width="140" height="44" class="box" fill="#171717" stroke="#262626"/>
+        <text x="730" y="67" class="lbl" font-size="12">🤖 WhatsApp</text>
+
+        <!-- Arrows down to channels -->
+        <path d="M300 84 L300 108" class="arr"/><path d="M580 84 L580 108" class="arr"/>
+        <circle cx="300" cy="96" r="3" fill="#06b6d4" class="flow-d"/><circle cx="580" cy="96" r="3" fill="#06b6d4" class="flow-d" style="animation-delay:0.5s"/>
+
+        <!-- Channel Layer -->
+        <text x="450" y="123" class="lbl" font-size="11" fill="#737373" font-weight="600" letter-spacing="2">CHANNEL PLATFORMS</text>
+        <rect x="120" y="132" width="200" height="48" class="box" fill="#1e293b" stroke="#334155"/>
+        <text x="220" y="161" class="lbl" font-size="13" font-weight="600">Salesforce Agentforce</text>
+        <rect x="340" y="132" width="200" height="48" class="box" fill="#1e293b" stroke="#334155"/>
+        <text x="440" y="161" class="lbl" font-size="13" font-weight="600">Genesys Cloud</text>
+        <rect x="560" y="132" width="200" height="48" class="box" fill="#1e293b" stroke="#334155"/>
+        <text x="660" y="161" class="lbl" font-size="13" font-weight="600">Custom CRM</text>
+
+        <!-- Arrows down to RetainIQ -->
+        <path d="M220 180 L380 215" class="arr" stroke="#06b6d4" stroke-dasharray="4 4"/>
+        <path d="M440 180 L440 215" class="arr" stroke="#06b6d4"/>
+        <path d="M660 180 L500 215" class="arr" stroke="#06b6d4" stroke-dasharray="4 4"/>
+        <circle cx="440" cy="198" r="3" fill="#06b6d4" class="flow-d"/><text x="470" y="204" class="sub" fill="#06b6d4" font-weight="600" font-size="9">POST /v1/decide</text>
+
+        <!-- RetainIQ (the hero) -->
+        <g class="retainiq-glow">
+          <rect x="320" y="218" width="260" height="64" class="box" fill="url(#cg)" stroke="#38bdf8" stroke-width="2"/>
+          <text x="450" y="247" class="lbl" font-size="18" font-weight="800" fill="#000">RetainIQ</text>
+          <text x="450" y="268" font-family="monospace" text-anchor="middle" font-size="10" fill="rgba(0,0,0,0.6)">&lt; 200ms · ranked · compliant</text>
+        </g>
+
+        <!-- Arrows down to backends -->
+        <path d="M380 282 L220 315" class="arr"/><path d="M440 282 L440 315" class="arr"/><path d="M500 282 L660 315" class="arr"/>
+        <circle cx="440" cy="298" r="3" fill="#06b6d4" class="flow-d" style="animation-delay:0.3s"/>
+
+        <!-- Backend Layer -->
+        <text x="450" y="328" class="lbl" font-size="11" fill="#737373" font-weight="600" letter-spacing="2">OPERATOR BACKENDS (NOT REPLACED)</text>
+        <rect x="80" y="340" width="180" height="56" class="box" fill="#171717" stroke="#262626"/>
+        <text x="170" y="365" class="lbl" font-size="12" font-weight="600">BSS / Billing</text>
+        <text x="170" y="382" class="sub">Amdocs · Netcracker</text>
+        <rect x="280" y="340" width="160" height="56" class="box" fill="#171717" stroke="#262626"/>
+        <text x="360" y="365" class="lbl" font-size="12" font-weight="600">VAS Platform</text>
+        <text x="360" y="382" class="sub">Provisioning</text>
+        <rect x="460" y="340" width="160" height="56" class="box" fill="#171717" stroke="#262626"/>
+        <text x="540" y="365" class="lbl" font-size="12" font-weight="600">CRM / CDP</text>
+        <text x="540" y="382" class="sub">Subscriber 360</text>
+        <rect x="640" y="340" width="180" height="56" class="box" fill="#171717" stroke="#262626"/>
+        <text x="730" y="365" class="lbl" font-size="12" font-weight="600">Data Warehouse</text>
+        <text x="730" y="382" class="sub">Revenue · Usage</text>
+      </svg>
     </div>
   </div>
-  <div class="integrations reveal">
-    <span class="integration-tag">Salesforce Agentforce</span>
-    <span class="integration-tag">Genesys Cloud</span>
-    <span class="integration-tag">Custom REST</span>
-    <span class="integration-tag">Webhooks</span>
-  </div>
-</div>
 </section>
 
-<!-- ROI -->
+<!-- ═══ Demo ═══ -->
+<section class="demo" id="demo">
+  <div class="container">
+    <div class="section-header">
+      <p class="eyebrow reveal">Interactive Demo</p>
+      <h2 class="reveal reveal-d1">See it in action.</h2>
+      <p class="subtitle reveal reveal-d2">Configure a subscriber scenario and watch RetainIQ return ranked, margin-aware offers with script hints.</p>
+    </div>
+    <div class="demo-container reveal">
+      <div class="demo-form">
+        <h3>Configure Request</h3>
+        <div class="form-group">
+          <label>Subscriber ID</label>
+          <input type="text" id="d-sub" value="sub_12345">
+        </div>
+        <div class="form-group">
+          <label>Channel</label>
+          <select id="d-channel"><option>agentforce</option><option>genesys</option><option selected>app</option><option>ivr</option></select>
+        </div>
+        <div class="form-group">
+          <label>Intent</label>
+          <select id="d-intent"><option selected>cancel</option><option>complaint</option><option>billing</option><option>upgrade</option></select>
+        </div>
+        <div class="form-group">
+          <label>Frustration Score</label>
+          <div class="slider-row">
+            <input type="range" id="d-frust" min="0" max="1" step="0.05" value="0.75">
+            <span class="slider-val" id="d-frust-val">0.75</span>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Market</label>
+          <select id="d-market"><option selected>AE</option><option>SA</option><option>KW</option><option>BH</option><option>OM</option></select>
+        </div>
+        <button class="btn-demo" onclick="runDemo()">
+          POST /v1/decide →
+        </button>
+      </div>
+      <div class="demo-response">
+        <div class="demo-response-header">
+          <div class="status"><span class="status-dot"></span> 200 OK</div>
+          <div class="latency" id="d-latency">87ms</div>
+        </div>
+        <div class="demo-json" id="d-output">Click "POST /v1/decide" to see the response...</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ROI ═══ -->
 <section id="roi">
-<div class="container">
-  <h2 class="section-title reveal">Proven ROI in 30 Days</h2>
-  <p class="section-subtitle reveal">Results from pilot deployments across MENA telecom operators.</p>
-  <div class="roi-metrics">
-    <div class="roi-card reveal reveal-delay-1"><div class="roi-value" data-target="34" data-prefix="+" data-suffix="%">+0%</div><div class="roi-label">Offer attach rate</div></div>
-    <div class="roi-card reveal reveal-delay-1"><div class="roi-value" data-target="18" data-prefix="+" data-suffix="%">+0%</div><div class="roi-label">Margin on retained accounts</div></div>
-    <div class="roi-card reveal reveal-delay-2"><div class="roi-value" data-target="4" data-suffix=" hours">0 hours</div><div class="roi-label">To first decision</div></div>
-    <div class="roi-card reveal reveal-delay-2"><div class="roi-value" data-target="100" data-suffix="%">0%</div><div class="roi-label">TDRA/NCA compliant</div></div>
+  <div class="container">
+    <div class="section-header">
+      <p class="eyebrow reveal">Proven Impact</p>
+      <h2 class="reveal reveal-d1">ROI from day one.<br>Compounds every month.</h2>
+    </div>
+    <div class="roi-grid">
+      <div class="roi-card reveal">
+        <div class="roi-value" data-count="34" data-prefix="+" data-suffix="%">0</div>
+        <div class="roi-label">Offer attach rate vs static scripts</div>
+      </div>
+      <div class="roi-card reveal reveal-d1">
+        <div class="roi-value" data-count="18" data-prefix="+" data-suffix="%">0</div>
+        <div class="roi-label">Net margin on retained accounts</div>
+      </div>
+      <div class="roi-card reveal reveal-d2">
+        <div class="roi-value" data-count="4" data-suffix="h">0</div>
+        <div class="roi-label">To first production decision</div>
+      </div>
+      <div class="roi-card reveal reveal-d3">
+        <div class="roi-value" data-count="100" data-suffix="%">0</div>
+        <div class="roi-label">TDRA / NCA audit compliant</div>
+      </div>
+    </div>
+    <div class="comparison reveal">
+      <table>
+        <thead><tr><th>Dimension</th><th>Before</th><th>With RetainIQ</th></tr></thead>
+        <tbody>
+          <tr><td>Offer selection</td><td>Static scripts, agent improvisation</td><td>ML-ranked, margin-aware, per-subscriber</td></tr>
+          <tr><td>Integration time</td><td>3–6 months SI per channel</td><td>Under 4 hours via webhook</td></tr>
+          <tr><td>Compliance</td><td>Rules in spreadsheets, manual audit</td><td>JSON DSL rules, 24-month automated trail</td></tr>
+          <tr><td>Feedback loop</td><td>None — wins and losses vanish</td><td>Accept/decline feeds model retraining</td></tr>
+          <tr><td>Margin awareness</td><td>"Save at any cost"</td><td>Margin is part of the ranking formula</td></tr>
+          <tr><td>Time to new offer</td><td>Weeks of CRM configuration</td><td>Add to catalog → live in 15 minutes</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
-  <div class="reveal" style="overflow-x:auto">
-  <table class="comparison-table">
-    <thead><tr><th></th><th>Before</th><th>After RetainIQ</th></tr></thead>
-    <tbody>
-      <tr><td>Offer method</td><td>Static scripts</td><td>ML-ranked, margin-aware</td></tr>
-      <tr><td>Integration</td><td>3-6 months SI</td><td>&lt; 4 hours webhook</td></tr>
-      <tr><td>Compliance</td><td>Manual audit</td><td>Automated 24-month trail</td></tr>
-      <tr><td>Feedback loop</td><td>None</td><td>Accept/decline feeds model</td></tr>
-    </tbody>
-  </table>
-  </div>
-</div>
 </section>
 
-<!-- Pricing -->
-<section id="pricing">
-<div class="container">
-  <h2 class="section-title reveal">Simple, Volume-Based Pricing</h2>
-  <p class="section-subtitle reveal">No setup fees. No per-seat licenses. You pay for decisions.</p>
-  <div class="pricing-grid">
-    <div class="pricing-card reveal reveal-delay-1">
-      <div class="pricing-tier">Starter</div>
-      <div class="pricing-name">Pilot</div>
-      <ul class="pricing-features">
-        <li>Up to 10K decisions/mo</li>
-        <li>1 channel</li>
-        <li>Webhook integration</li>
-        <li>Email support</li>
-      </ul>
-      <a href="#" class="btn btn-secondary" style="width:100%;justify-content:center">Contact Sales</a>
+<!-- ═══ Integrations ═══ -->
+<section style="background:var(--surface)">
+  <div class="container">
+    <div class="section-header">
+      <p class="eyebrow reveal">Integrations</p>
+      <h2 class="reveal reveal-d1">Works with your stack.<br>Not instead of it.</h2>
     </div>
-    <div class="pricing-card featured reveal reveal-delay-2">
-      <div class="pricing-tier">Growth</div>
-      <div class="pricing-name">Scale</div>
-      <ul class="pricing-features">
-        <li>Up to 100K decisions/mo</li>
-        <li>3 channels</li>
-        <li>Managed connectors</li>
-        <li>Dedicated Slack channel</li>
-      </ul>
-      <a href="#" class="btn btn-primary" style="width:100%;justify-content:center">Contact Sales</a>
-    </div>
-    <div class="pricing-card reveal reveal-delay-3">
-      <div class="pricing-tier">Enterprise</div>
-      <div class="pricing-name">Unlimited</div>
-      <ul class="pricing-features">
-        <li>Unlimited decisions</li>
-        <li>All channels</li>
-        <li>BYOK encryption</li>
-        <li>Dedicated support + SLA</li>
-      </ul>
-      <a href="#" class="btn btn-secondary" style="width:100%;justify-content:center">Contact Sales</a>
+    <div class="integrations-grid">
+      <div class="integration-card reveal">
+        <span class="integration-icon">☁️</span>
+        <h3>Salesforce Agentforce</h3>
+        <p>Managed AppExchange package</p>
+        <div class="integration-time">&lt; 1 hour</div>
+      </div>
+      <div class="integration-card reveal reveal-d1">
+        <span class="integration-icon">🎧</span>
+        <h3>Genesys Cloud</h3>
+        <p>AppFoundry connector</p>
+        <div class="integration-time">&lt; 1 hour</div>
+      </div>
+      <div class="integration-card reveal reveal-d2">
+        <span class="integration-icon">🔗</span>
+        <h3>Webhook</h3>
+        <p>Any HTTP-capable system</p>
+        <div class="integration-time">&lt; 4 hours</div>
+      </div>
+      <div class="integration-card reveal reveal-d3">
+        <span class="integration-icon">⚡</span>
+        <h3>REST / SDK</h3>
+        <p>Python, Node, Java, Kotlin</p>
+        <div class="integration-time">&lt; 1 day</div>
+      </div>
     </div>
   </div>
-</div>
 </section>
 
-<!-- Footer -->
+<!-- ═══ CTA ═══ -->
+<section class="cta-section">
+  <div class="container">
+    <p class="eyebrow reveal">Get Started</p>
+    <h2 class="reveal reveal-d1">Ready to stop guessing?</h2>
+    <p class="subtitle reveal reveal-d2">Deploy RetainIQ today. First decision in under 4 hours. ROI visible in 30 days.</p>
+    <div class="cta-buttons reveal reveal-d3">
+      <a href="https://github.com/vishalm/retainIQ" class="btn btn-glow">View on GitHub</a>
+      <a href="https://github.com/vishalm/retainIQ/blob/main/docs/quickstart.md" class="btn btn-ghost">Read the Quickstart →</a>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ Footer ═══ -->
 <footer>
-<div class="container">
-  <div class="footer-logo">Retain<span>IQ</span></div>
-  <div class="footer-links">
-    <a href="#">Documentation</a>
-    <a href="#">API Reference</a>
-    <a href="https://github.com" target="_blank">GitHub</a>
-    <a href="#">Contact</a>
+  <div class="container">
+    <div class="footer-left">
+      <span class="footer-logo">RetainIQ</span>
+      <span class="footer-copy">Built for MENA telecom operators. UAE & KSA data residency compliant.</span>
+    </div>
+    <div class="footer-links">
+      <a href="https://github.com/vishalm/retainIQ/blob/main/docs/quickstart.md">Docs</a>
+      <a href="https://github.com/vishalm/retainIQ/blob/main/docs/openapi.yaml">API</a>
+      <a href="https://github.com/vishalm/retainIQ">GitHub</a>
+    </div>
   </div>
-  <p class="footer-note">Built for MENA telecom operators. UAE/KSA data residency compliant.</p>
-</div>
 </footer>
 
 <script>
-// Intersection Observer for scroll reveals
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }});
-}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
-document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+/* ═══ Scroll Reveal ═══ */
+const obs = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); } });
+}, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
 
-// Counter animation
-function animateCounters() {
-  document.querySelectorAll('[data-target]').forEach(el => {
-    const io = new IntersectionObserver((entries) => {
-      if (!entries[0].isIntersecting) return;
-      io.unobserve(el);
-      const target = +el.dataset.target;
-      const prefix = el.dataset.prefix || '';
-      const suffix = el.dataset.suffix || '';
-      const duration = 1500;
-      const start = performance.now();
-      function tick(now) {
-        const p = Math.min((now - start) / duration, 1);
-        const ease = 1 - Math.pow(1 - p, 3);
-        el.textContent = prefix + Math.round(target * ease) + suffix;
-        if (p < 1) requestAnimationFrame(tick);
-      }
-      requestAnimationFrame(tick);
-    }, { threshold: 0.5 });
-    io.observe(el);
+/* ═══ Nav Scroll ═══ */
+window.addEventListener('scroll', () => {
+  document.getElementById('nav').classList.toggle('scrolled', window.scrollY > 40);
+});
+
+/* ═══ Count-Up Animation ═══ */
+const countObs = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (!e.isIntersecting || e.target.dataset.counted) return;
+    e.target.dataset.counted = '1';
+    const target = +e.target.dataset.count;
+    const prefix = e.target.dataset.prefix || '';
+    const suffix = e.target.dataset.suffix || '';
+    const dur = 1200;
+    const start = performance.now();
+    const step = (now) => {
+      const p = Math.min((now - start) / dur, 1);
+      const ease = 1 - Math.pow(1 - p, 4);
+      e.target.textContent = prefix + Math.round(target * ease) + suffix;
+      if (p < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
   });
-}
-animateCounters();
+}, { threshold: 0.5 });
+document.querySelectorAll('[data-count]').forEach(el => countObs.observe(el));
 
-// Terminal JSON typing
-const terminalJson = `<span class="label">// Request</span><span class="punct">{</span>
-  <span class="key">"subscriber_id"</span><span class="punct">:</span> <span class="str">"sub_12345"</span><span class="punct">,</span>
-  <span class="key">"channel"</span><span class="punct">:</span> <span class="str">"agentforce"</span><span class="punct">,</span>
-  <span class="key">"intent"</span><span class="punct">:</span> <span class="str">"cancel"</span><span class="punct">,</span>
-  <span class="key">"frustration_score"</span><span class="punct">:</span> <span class="num">0.7</span>
-<span class="punct">}</span>
+/* ═══ Slider ═══ */
+document.getElementById('d-frust').addEventListener('input', function() {
+  document.getElementById('d-frust-val').textContent = this.value;
+});
 
-<span class="label">// Response &mdash; 87ms</span><span class="punct">{</span>
-  <span class="key">"churn_score"</span><span class="punct">:</span> <span class="num">0.82</span><span class="punct">,</span>
-  <span class="key">"churn_band"</span><span class="punct">:</span> <span class="str">"high"</span><span class="punct">,</span>
-  <span class="key">"offers"</span><span class="punct">: [</span>
-    <span class="punct">{</span> <span class="key">"id"</span><span class="punct">:</span> <span class="str">"off_501"</span><span class="punct">,</span> <span class="key">"name"</span><span class="punct">:</span> <span class="str">"6-mo 30% discount"</span><span class="punct">,</span> <span class="key">"retention"</span><span class="punct">:</span> <span class="num">0.74</span><span class="punct">,</span> <span class="key">"margin"</span><span class="punct">:</span> <span class="num">0.41</span> <span class="punct">},</span>
-    <span class="punct">{</span> <span class="key">"id"</span><span class="punct">:</span> <span class="str">"off_220"</span><span class="punct">,</span> <span class="key">"name"</span><span class="punct">:</span> <span class="str">"Free roaming 90d"</span><span class="punct">,</span> <span class="key">"retention"</span><span class="punct">:</span> <span class="num">0.68</span><span class="punct">,</span> <span class="key">"margin"</span><span class="punct">:</span> <span class="num">0.55</span> <span class="punct">},</span>
-    <span class="punct">{</span> <span class="key">"id"</span><span class="punct">:</span> <span class="str">"off_899"</span><span class="punct">,</span> <span class="key">"name"</span><span class="punct">:</span> <span class="str">"Device upgrade credit"</span><span class="punct">,</span> <span class="key">"retention"</span><span class="punct">:</span> <span class="num">0.61</span><span class="punct">,</span> <span class="key">"margin"</span><span class="punct">:</span> <span class="num">0.63</span> <span class="punct">}</span>
-  <span class="punct">]</span>
-<span class="punct">}</span>`;
-
-const termEl = document.getElementById('terminal-json');
-const termIO = new IntersectionObserver((entries) => {
-  if (!entries[0].isIntersecting) return;
-  termIO.unobserve(termEl);
-  termEl.innerHTML = terminalJson;
-}, { threshold: 0.2 });
-termIO.observe(termEl);
-
-// Frustration slider
-const slider = document.getElementById('demo-frustration');
-const sliderVal = document.getElementById('frustration-val');
-slider.addEventListener('input', () => { sliderVal.textContent = (slider.value / 100).toFixed(2); });
-
-// Demo simulation
-const offerPool = [
-  { id: 'off_501', name: '6-mo 30% discount', retention: [0.70, 0.82], margin: [0.35, 0.45], script: 'I can offer you a 30% discount for the next 6 months on your current plan.' },
-  { id: 'off_220', name: 'Free roaming 90 days', retention: [0.60, 0.72], margin: [0.50, 0.60], script: 'How about free international roaming for the next 3 months?' },
-  { id: 'off_899', name: 'Device upgrade credit', retention: [0.55, 0.68], margin: [0.58, 0.68], script: 'We can offer you a device upgrade credit of AED 500 toward any new phone.' },
-  { id: 'off_310', name: 'Double data 3 months', retention: [0.62, 0.75], margin: [0.45, 0.55], script: 'Let me double your data allowance for the next 3 months at no extra cost.' },
-  { id: 'off_115', name: 'Loyalty bonus 500 pts', retention: [0.50, 0.62], margin: [0.65, 0.75], script: 'I\'m adding 500 bonus loyalty points to your account right now.' },
-  { id: 'off_780', name: 'Family plan add-on free', retention: [0.64, 0.78], margin: [0.40, 0.52], script: 'We can add a free family line to your plan for 6 months.' },
+/* ═══ Demo ═══ */
+const offers = [
+  { sku:'VAS-FAMILY-PLAN', name:'Family Plan — Add 3 Lines', margin:20, cat:'family', script:'I can add 3 family lines at 50% discount for the next 12 months.' },
+  { sku:'VAS-STREAM-PLUS', name:'StreamPlus 3-Month Free Trial', margin:12.5, cat:'streaming', script:'StreamPlus is completely free for 3 months — cancel anytime.' },
+  { sku:'VAS-DATA-BOOST', name:'Double Data for 6 Months', margin:8, cat:'data', script:'I can double your data allowance for 6 months at no extra cost.' },
+  { sku:'VAS-ROAM-FREE', name:'Free GCC Roaming 30 Days', margin:15, cat:'international', script:'Free roaming across all GCC countries for the next 30 days.' },
+  { sku:'VAS-LOYALTY-GOLD', name:'Gold Loyalty — 20% Discount', margin:5, cat:'loyalty', script:'As a loyal customer, you qualify for 20% off your plan for 12 months.' },
+  { sku:'VAS-STREAM-BASIC', name:'StreamBasic 1-Month Trial', margin:6, cat:'streaming', script:'Try StreamBasic free for a month — great entertainment included.' },
 ];
 
-function rand(min, max) { return +(min + Math.random() * (max - min)).toFixed(2); }
-
 function runDemo() {
-  const btn = document.getElementById('demo-btn');
-  const output = document.getElementById('demo-output');
-  const latencyEl = document.getElementById('demo-latency');
-  btn.classList.add('btn-loading');
-  btn.textContent = 'Scoring...';
-  output.innerHTML = '<span style="color:var(--muted)">Processing request...</span>';
-  latencyEl.textContent = '...';
+  const frust = +document.getElementById('d-frust').value;
+  const intent = document.getElementById('d-intent').value;
+  const channel = document.getElementById('d-channel').value;
+  const market = document.getElementById('d-market').value;
+  const sub = document.getElementById('d-sub').value;
 
-  const subId = document.getElementById('demo-sub').value || 'sub_12345';
-  const channel = document.getElementById('demo-channel').value;
-  const intent = document.getElementById('demo-intent').value;
-  const frustration = slider.value / 100;
+  const churn = Math.min(0.95, 0.15 + frust * 0.5 + (intent === 'cancel' ? 0.2 : 0) + Math.random() * 0.1);
+  const band = churn > 0.8 ? 'CRITICAL' : churn > 0.6 ? 'HIGH' : churn > 0.3 ? 'MEDIUM' : 'LOW';
+  const latency = 60 + Math.floor(Math.random() * 80);
 
-  setTimeout(() => {
-    const churn = Math.min(0.98, Math.max(0.15, frustration * 0.6 + (intent === 'cancel' ? 0.25 : intent === 'complaint' ? 0.15 : 0.05) + (Math.random() * 0.1 - 0.05)));
-    const churnBand = churn > 0.7 ? 'high' : churn > 0.4 ? 'medium' : 'low';
-    const churnClass = churn > 0.7 ? 'churn-high' : churn > 0.4 ? 'churn-med' : 'churn-low';
+  const shuffled = [...offers].sort(() => Math.random() - 0.5);
+  const picked = shuffled.slice(0, 3).map((o, i) => ({
+    rank: i + 1, sku: o.sku, name: o.name,
+    retention_probability: +(0.4 + Math.random() * 0.5).toFixed(2),
+    margin_impact: o.margin,
+    script_hint: o.script,
+    deep_link: `https://activate.retainiq.com/${o.sku}`,
+    regulatory: { consent_required: o.cat === 'family' || o.cat === 'international', disclosure: market === 'SA' ? 'يتطلب موافقة المشترك' : null }
+  }));
 
-    // Pick 3 random offers
-    const shuffled = [...offerPool].sort(() => Math.random() - 0.5);
-    const picked = shuffled.slice(0, 3).map((o, i) => ({
-      ...o,
-      retention: rand(o.retention[0], o.retention[1]),
-      margin: rand(o.margin[0], o.margin[1]),
-      rank: i + 1
-    })).sort((a, b) => (b.retention * 0.6 + b.margin * 0.4) - (a.retention * 0.6 + a.margin * 0.4));
+  const res = {
+    decision_id: crypto.randomUUID(),
+    subscriber: { segment: 'postpaid', churn_score: +churn.toFixed(3), churn_band: band, tenure_days: 365 + Math.floor(Math.random() * 1000) },
+    offers: picked,
+    action: band === 'CRITICAL' && picked.length < 2 ? 'escalate' : 'present_offers',
+    degraded: false,
+    confidence: 'HIGH',
+    latency_ms: latency,
+  };
 
-    const latency = Math.floor(60 + Math.random() * 80);
-    latencyEl.textContent = latency + 'ms';
-
-    const offersJson = picked.map((o, i) => {
-      return `    <span class="punct">{</span>
-      <span class="key">"rank"</span><span class="punct">:</span> <span class="num">${i + 1}</span><span class="punct">,</span>
-      <span class="key">"offer_id"</span><span class="punct">:</span> <span class="str">"${o.id}"</span><span class="punct">,</span>
-      <span class="key">"name"</span><span class="punct">:</span> <span class="str">"${o.name}"</span><span class="punct">,</span>
-      <span class="key">"predicted_retention"</span><span class="punct">:</span> <span class="num">${o.retention}</span><span class="punct">,</span>
-      <span class="key">"margin_score"</span><span class="punct">:</span> <span class="num">${o.margin}</span><span class="punct">,</span>
-      <span class="key">"script_hint"</span><span class="punct">:</span> <span class="str">"${o.script}"</span>
-    <span class="punct">}</span>`;
-    }).join('<span class="punct">,</span>\n');
-
-    output.innerHTML = `<span class="punct">{</span>
-  <span class="key">"request_id"</span><span class="punct">:</span> <span class="str">"req_${Date.now().toString(36)}"</span><span class="punct">,</span>
-  <span class="key">"subscriber_id"</span><span class="punct">:</span> <span class="str">"${subId}"</span><span class="punct">,</span>
-  <span class="key">"churn_score"</span><span class="punct">:</span> <span class="num ${churnClass}">${churn.toFixed(2)}</span><span class="punct">,</span>
-  <span class="key">"churn_band"</span><span class="punct">:</span> <span class="str ${churnClass}">"${churnBand}"</span><span class="punct">,</span>
-  <span class="key">"offers"</span><span class="punct">:</span> <span class="punct">[</span>
-${offersJson}
-  <span class="punct">],</span>
-  <span class="key">"latency_ms"</span><span class="punct">:</span> <span class="num">${latency}</span><span class="punct">,</span>
-  <span class="key">"model_version"</span><span class="punct">:</span> <span class="str">"v2.4.1"</span><span class="punct">,</span>
-  <span class="key">"compliant"</span><span class="punct">:</span> <span class="bool">true</span>
-<span class="punct">}</span>`;
-
-    btn.classList.remove('btn-loading');
-    btn.textContent = 'Get Offers';
-  }, 600 + Math.random() * 400);
+  document.getElementById('d-latency').textContent = latency + 'ms';
+  document.getElementById('d-output').innerHTML = syntaxHL(JSON.stringify(res, null, 2));
 }
+
+function syntaxHL(json) {
+  return json
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"([^"]+)":/g, '<span class="key">"$1"</span>:')
+    .replace(/: "([^"]*)"/g, ': <span class="str">"$1"</span>')
+    .replace(/: (\d+\.?\d*)/g, ': <span class="num">$1</span>')
+    .replace(/: (true|false)/g, ': <span class="bool">$1</span>');
+}
+
+// Run demo on load for immediate impact
+setTimeout(runDemo, 800);
 </script>
 </body>
 </html>
