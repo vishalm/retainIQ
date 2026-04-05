@@ -5,8 +5,8 @@
 | | |
 |---|---|
 | **Document** | Technical source: `docs/RetainIQ_Technical_Design.docx` (v1.0.0, draft) |
-| **Status** | Running locally — all systems operational |
-| **Stack** | Kotlin · Spring Boot WebFlux · PostgreSQL · Redis · Kafka · LightGBM · AWS me-south-1 |
+| **Status** | Running — all systems operational (Kotlin/Spring Boot 3 WebFlux, JDK 21, ZGC) |
+| **Stack** | Kotlin · Spring Boot 3 WebFlux · JDK 21 · PostgreSQL · Redis · Kafka · LightGBM · Docker · K8s · AWS me-south-1 |
 
 ## What RetainIQ Does — Animated
 
@@ -32,6 +32,7 @@
 | http://localhost:3000 | Grafana (dashboards) | admin / admin |
 | http://localhost:9090 | Prometheus (metrics) | — |
 | http://localhost:8080/actuator/prometheus | App metrics endpoint | — |
+| https://vishalm.github.io/retainIQ/ | **Product Site** (GitHub Pages) | — |
 
 ### Management Console Pages
 
@@ -266,6 +267,22 @@ curl -s -X POST http://localhost:8080/v1/decide \
 
 See [quickstart.md](docs/quickstart.md) for full integration guide with code samples in Python, Node, Java, and Apex.
 
+## What's Been Built
+
+RetainIQ is a fully operational CVM real-time decisioning engine. Here is the scope of what has been delivered:
+
+| Layer | What | Details |
+|-------|------|---------|
+| **Backend API** | Kotlin/Spring Boot 3 WebFlux, JDK 21, ZGC | 5-stage decision pipeline (Enrich/Score/Eligibility/Rank/Respond), 20 API endpoints, JWT auth with RBAC (super_admin, tenant_admin, analyst, viewer) |
+| **ML** | LightGBM churn model | Sigmoid calibration v1.1 fix, multi-objective ranking formula, 16 passing unit tests |
+| **Frontend** | React management console (Vite + TailwindCSS) | Dashboard, telco config, user management pages |
+| **Data** | PostgreSQL (partitioned) + Redis (L1+L2 two-tier cache) + Kafka | Schema-per-tenant isolation, cache-aside with request coalescing |
+| **Infrastructure** | Docker (14 services) + K8s manifests | Full local stack with single `make docker-up` |
+| **Observability** | Prometheus + Grafana + Tempo + Loki | 3 Grafana dashboards: overview, API performance, E2E tracing |
+| **Testing** | k6 load tests + unit tests | 6ms sequential, 512 RPS peak, 0% errors, 16 unit tests passing |
+| **Docs** | Product site + technical docs | GitHub Pages site with interactive demo at https://vishalm.github.io/retainIQ/ |
+| **CI/CD** | GitHub Actions | Build, test, deploy workflows |
+
 ## Repository Layout
 
 ```
@@ -289,7 +306,12 @@ retainiq/
 ├── src/main/resources/
 │   ├── application.yml                  # Config with profiles (local, prod)
 │   └── db/migration/platform/           # Flyway migrations (partitioned tables)
-├── src/test/kotlin/                     # Unit + integration tests
+├── src/test/kotlin/                     # Unit + integration tests (16 passing)
+├── console/                             # React admin console (Vite + TailwindCSS)
+├── observability/                       # Grafana dashboards, Prometheus config, Tempo, Loki
+├── loadtest/                            # k6 load test scripts
+├── gh-pages/                            # GitHub Pages product site (interactive demo)
+├── .github/                             # GitHub Actions CI/CD workflows
 └── docs/
     ├── RetainIQ_Technical_Design.docx   # authoritative technical design (ingested)
     ├── quickstart.md                    # developer quick start (10 min)

@@ -4,7 +4,7 @@ This document summarises the system design from the RetainIQ Technical Design (S
 
 ## 1. System context
 
-RetainIQ sits in the **decisioning layer** between operator channels and BSS/VAS/CRM systems. It does **not** replace conversational AI or billing; it tells those systems **what to offer**, with compliance and margin awareness.
+**RetainIQ is the real-time execution layer for CVM (Customer Value Management).** It sits in the decisioning layer between operator channels and BSS/VAS/CRM systems. It does **not** replace conversational AI or billing; it tells those systems **what to offer**, with compliance and margin awareness. Your CVM team designs the strategy. RetainIQ executes it at the speed of conversation.
 
 ```mermaid
 flowchart TB
@@ -227,6 +227,20 @@ Declarative JSON DSL, **hot-deployed** without service restart.
 | Pipeline stage timers | Micrometer | Each stage individually timed |
 | L1/L2 cache hit rates | Micrometer | Per-entity, per-tenant |
 | Churn score distribution | Micrometer | Histogram with band labels |
+
+### Grafana Dashboards
+
+Three pre-configured Grafana dashboards are available at http://localhost:3000:
+
+1. **RetainIQ Overview** — platform-wide KPIs: decision count, error rate, churn score distribution, cache hit rates
+2. **API Performance** — per-endpoint latency percentiles, throughput, pipeline stage timers
+3. **E2E Tracing** — distributed trace view via Tempo integration, request waterfall from channel to BSS
+
+The observability stack includes Prometheus (metrics), Grafana (dashboards), Tempo (distributed tracing), and Loki (log aggregation).
+
+### Management Console
+
+The React-based management console (http://localhost:5173) provides a UI for tenant configuration (BSS connection, compliance rules, ranking weights), user management (RBAC: super_admin, tenant_admin, analyst, viewer), and a platform dashboard with KPIs and channel distribution.
 
 ## 10. Graceful degradation
 

@@ -1,5 +1,7 @@
 # MENA Regulatory Compliance Design
 
+> Compliance is a core CVM concern — every retention offer must meet TDRA/NCA requirements. RetainIQ enforces these rules as part of the decision pipeline, not as an afterthought. The rule engine evaluates regulatory constraints during the eligibility stage, ensuring that only compliant offers reach the CVM team's ranking formula.
+
 **Scope:** UAE (TDRA) and KSA (NCA/CITC) compliance requirements for RetainIQ
 **Last updated:** 2026-04-05
 

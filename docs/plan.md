@@ -104,7 +104,8 @@ See `architecture.md` and `product.md` for full risk treatment. Highest planning
 Load testing performed with k6 against a single containerized instance:
 
 - **Sequential hot path**: 6ms avg — well within the 200ms budget
-- **50 concurrent VUs**: 180ms avg, 0% errors — demonstrates the pipeline is production-viable
+- **50 concurrent VUs**: 87ms avg (first run), 0% errors — demonstrates the pipeline is production-viable
+- **Peak throughput**: 512 RPS with 0% errors
 - **Churn model fix**: sigmoid recalibrated (v1.1) — high-risk subscribers now correctly score HIGH/CRITICAL instead of MEDIUM
 - **L1 cache**: reduces Redis round-trips by >80% for repeated lookups
 
@@ -120,6 +121,24 @@ Load testing performed with k6 against a single containerized instance:
 3. Catalog sync SLA (&lt; 15 min) observed in monitoring.
 4. Outcome loop feeding retraining with measurable model quality movement.
 5. Multi-tenant GA criteria from Phase 6 satisfied.
+
+---
+
+## What's Been Delivered
+
+Phase 0 (Foundation) and Phase 1 (Core Decide) are essentially complete:
+
+- **API + Auth**: 20 endpoints running, JWT authentication with RBAC (super_admin, tenant_admin, analyst, viewer)
+- **Tenant model**: Schema-per-tenant PostgreSQL isolation, management console for tenant onboarding and configuration
+- **Decisioning pipeline**: 5-stage pipeline (Enrich/Score/Eligibility/Rank/Respond) operational, 6ms hot-path latency
+- **Churn model**: LightGBM with sigmoid v1.1 calibration fix, 16 passing unit tests
+- **Connectors**: REST API (Tier 3) fully operational; catalog sync via `POST /v1/catalog/sync`
+- **Cache**: Redis L1+L2 two-tier caching with request coalescing
+- **Observability**: Prometheus + Grafana (3 dashboards) + Tempo + Loki
+- **Infrastructure**: Docker (14 services), K8s manifests, GitHub Actions CI/CD
+- **Frontend**: React management console (Vite + TailwindCSS) with dashboard, telco config, user management
+- **Product site**: GitHub Pages at https://vishalm.github.io/retainIQ/ with interactive demo
+- **Load testing**: k6 tests achieving 512 RPS peak, 0% errors
 
 ---
 

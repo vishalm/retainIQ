@@ -1,5 +1,7 @@
 # Multi-Tenancy Schema Design
 
+> Each tenant represents a telecom operator's CVM instance — fully isolated schema, independent rules, separate ranking weights. This ensures that each operator's CVM strategy, compliance requirements, and subscriber data remain completely separate.
+
 **RetainIQ -- Schema-per-Tenant Isolation on PostgreSQL 15**
 
 | Component        | Technology                     |

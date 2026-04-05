@@ -3,11 +3,14 @@ info:
   title: RetainIQ API
   version: 1.0.0
   description: |
-    Real-time VAS offer decisioning API for telecom operators.
+    Real-time CVM (Customer Value Management) decisioning API for telecom operators.
 
-    RetainIQ evaluates subscriber signals in real time and returns ranked,
+    RetainIQ is the real-time execution layer for CVM — it evaluates subscriber
+    signals, scores churn risk, applies eligibility rules, and returns ranked,
     margin-aware retention offers with regulatory metadata. The platform
     targets < 200 ms p99 latency on the `/v1/decide` endpoint.
+
+    **Category:** CVM, CLM, NBO (Next-Best-Offer), Retention Management.
 
     ## Authentication
     All endpoints require an OAuth 2.0 Bearer token obtained via the

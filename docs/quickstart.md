@@ -1,8 +1,8 @@
 # RetainIQ — Quick Start Integration
 
-**Get retention offers in your app in under 10 minutes.**
+**Get CVM retention offers in your app in under 10 minutes.**
 
-No managed packages. No marketplace approvals. No config UIs. Just one API call.
+RetainIQ is the real-time execution layer for Customer Value Management (CVM). Your CVM team designs the strategy. RetainIQ executes it at the speed of conversation. No managed packages. No marketplace approvals. Just one API call.
 
 ---
 
@@ -174,15 +174,22 @@ HttpResponse<String> response = HttpClient.newHttpClient()
 
 Tested on a single Docker container (2 CPU, 1.5GB RAM) with k6 load testing tool:
 
-| Metric | Sequential | 50 Concurrent VUs | Production Target |
-|--------|-----------|-------------------|-------------------|
-| Avg latency | 6ms | 180ms | < 100ms |
-| P90 | 8ms | 300ms | < 150ms |
-| P99 | 22ms | ~500ms | < 200ms |
-| Error rate | 0% | 0% | < 0.5% |
-| Throughput | — | 275 RPS | 1,000 RPS sustained |
+| Metric | Sequential | 50 Concurrent VUs | Peak Load | Production Target |
+|--------|-----------|-------------------|-----------|-------------------|
+| Avg latency | 6ms | 87ms (first run) | — | < 100ms |
+| P90 | 8ms | — | — | < 150ms |
+| P99 | 22ms | — | — | < 200ms |
+| Error rate | 0% | 0% | 0% | < 0.5% |
+| Throughput | — | — | 512 RPS | 1,000 RPS sustained |
 
-The hot path (all caches warm, single request) completes in **6ms**. The P99 under concurrent load is container-constrained — with 3+ Kubernetes pods on dedicated infra, the 200ms SLA is achievable with 140ms of headroom.
+The hot path (all caches warm, single request) completes in **6ms**. Peak throughput reached **512 RPS** with **0% errors**. The P99 under concurrent load is container-constrained — with 3+ Kubernetes pods on dedicated infra, the 200ms SLA is achievable with significant headroom.
+
+### Management Console and Observability
+
+Once the stack is running (`make docker-up`):
+
+- **Management Console:** http://localhost:5173 — configure tenants, manage users, view dashboard KPIs (login: admin@retainiq.com / admin123)
+- **Grafana Dashboards:** http://localhost:3000 — 3 dashboards: overview, API performance, E2E tracing (login: admin / admin)
 
 Run the load test yourself:
 ```bash

@@ -6,6 +6,12 @@
 
 ---
 
+## CVM Context
+
+The churn model serves the CVM team's retention strategy by providing real-time risk scoring that informs offer selection. When a subscriber shows intent to leave, the model scores churn risk in under 30ms, enabling the CVM-configured ranking weights and eligibility rules to select the optimal retention offer. The ML pipeline is the intelligence layer that makes CVM strategy executable in real time.
+
+---
+
 ## 1. Feature Store Schema
 
 All features are keyed by `subscriber_id` (or `product_id` for product entity) and stored in a dual-layer feature store: Redis for online serving (hot path) and PostgreSQL for offline training (cold path).
