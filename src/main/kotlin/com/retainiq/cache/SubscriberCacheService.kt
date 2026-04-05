@@ -35,22 +35,30 @@ class SubscriberCacheService(
 ) {
     private fun key(tenantId: UUID, subscriberHash: String) = "tenant:$tenantId:subscriber:$subscriberHash"
 
-    /**
-     * Retrieves a cached subscriber profile, or null on cache miss or Redis failure.
-     *
-     * @param tenantId owning tenant
-     * @param subscriberHash HMAC hash of the subscriber's MSISDN
-     * @return the cached [SubscriberProfile], or null
-     */
+    // L1 in-process cache for hot subscribers (repeated calls during a session)
+    private data class L1Entry(val profile: SubscriberProfile, val expiresAt: Long)
+    private val l1 = java.util.concurrent.ConcurrentHashMap<String, L1Entry>()
+    private val l1TtlMs = 30_000L // 30 seconds
+
     suspend fun get(tenantId: UUID, subscriberHash: String): SubscriberProfile? {
+        val l1Key = "$tenantId:$subscriberHash"
+        val cached = l1[l1Key]
+        if (cached != null && cached.expiresAt > System.currentTimeMillis()) {
+            metrics.cacheHit("subscriber_l1", tenantId.toString())
+            return cached.profile
+        }
+
         return try {
             val json = redisTemplate.opsForValue().get(key(tenantId, subscriberHash)).awaitFirstOrNull()
             if (json != null) {
                 metrics.cacheHit("subscriber", tenantId.toString())
+                val profile = objectMapper.readValue(json, SubscriberProfile::class.java)
+                l1[l1Key] = L1Entry(profile, System.currentTimeMillis() + l1TtlMs)
+                profile
             } else {
                 metrics.cacheMiss("subscriber", tenantId.toString())
+                null
             }
-            json?.let { objectMapper.readValue(it, SubscriberProfile::class.java) }
         } catch (e: Exception) {
             logger.warn(e) { "Redis read failed for subscriber cache" }
             null

@@ -43,6 +43,7 @@ dependencies {
 
     // Redis
     implementation("io.lettuce:lettuce-core")
+    implementation("org.apache.commons:commons-pool2:2.12.0")
 
     // JWT / OAuth2
     implementation("io.jsonwebtoken:jjwt-api:0.12.5")
@@ -73,6 +74,7 @@ dependencies {
     testImplementation("org.testcontainers:kafka:1.19.8")
     testImplementation("io.mockk:mockk:1.13.11")
     testImplementation("com.ninja-squad:springmockk:4.0.2")
+    testImplementation("org.springframework.security:spring-security-test")
 }
 
 tasks.withType<KotlinCompile> {

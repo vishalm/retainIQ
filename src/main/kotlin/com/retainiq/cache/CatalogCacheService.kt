@@ -36,24 +36,41 @@ class CatalogCacheService(
 ) {
     private fun key(tenantId: UUID) = "tenant:$tenantId:catalog"
 
+    // L1 in-process cache: eliminates Redis round-trip for hot path
+    private data class CacheEntry(val products: List<VasProduct>, val expiresAt: Long)
+    private val l1Cache = java.util.concurrent.ConcurrentHashMap<UUID, CacheEntry>()
+    private val l1TtlMs = 60_000L // 60 seconds
+
     /**
      * Retrieves the active VAS product catalog for a tenant.
      *
-     * Falls back to the built-in [defaultCatalog] on cache miss or Redis failure.
+     * Uses a two-tier cache: L1 (in-process, 60s) → L2 (Redis, 15min) → default catalog.
+     * The L1 cache eliminates Redis serialization overhead on the hot decision path.
      *
      * @param tenantId owning tenant
      * @return list of active [VasProduct]s
      */
     suspend fun getActiveProducts(tenantId: UUID): List<VasProduct> {
+        // L1: in-process check (< 1ms)
+        val l1 = l1Cache[tenantId]
+        if (l1 != null && l1.expiresAt > System.currentTimeMillis()) {
+            metrics.cacheHit("catalog_l1", tenantId.toString())
+            return l1.products
+        }
+
+        // L2: Redis
         return try {
             val json = redisTemplate.opsForValue().get(key(tenantId)).awaitFirstOrNull()
             if (json != null) {
                 metrics.cacheHit("catalog", tenantId.toString())
-                objectMapper.readValue(json, object : TypeReference<List<VasProduct>>() {})
+                val products = objectMapper.readValue(json, object : TypeReference<List<VasProduct>>() {})
+                l1Cache[tenantId] = CacheEntry(products, System.currentTimeMillis() + l1TtlMs)
+                products
             } else {
                 metrics.cacheMiss("catalog", tenantId.toString())
-                logger.info { "Catalog cache miss for tenant $tenantId, returning defaults" }
-                defaultCatalog()
+                val defaults = defaultCatalog()
+                l1Cache[tenantId] = CacheEntry(defaults, System.currentTimeMillis() + l1TtlMs)
+                defaults
             }
         } catch (e: Exception) {
             logger.warn(e) { "Redis read failed for catalog, returning defaults" }

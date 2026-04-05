@@ -33,6 +33,17 @@ services:
       OTEL_LOGS_EXPORTER: none
       OTEL_TRACES_SAMPLER: always_on
       MANAGEMENT_OTLP_TRACING_ENDPOINT: http://otel-collector:4318/v1/traces
+      JAVA_OPTS: >-
+        -XX:+UseZGC -XX:+ZGenerational
+        -Xms512m -Xmx1g
+        -XX:+ExitOnOutOfMemoryError
+        -Dreactor.netty.ioWorkerCount=4
+        -Dio.netty.leakDetection.level=disabled
+    deploy:
+      resources:
+        limits:
+          memory: 1536M
+          cpus: '2'
     depends_on:
       postgres:
         condition: service_healthy

@@ -25,7 +25,9 @@ class DecisionRepository(
     private val databaseClient: DatabaseClient,
     private val objectMapper: ObjectMapper
 ) {
-    private val scope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private val scope = CoroutineScope(
+        Dispatchers.IO.limitedParallelism(4) + SupervisorJob()
+    )
 
     /**
      * Persists a decision record asynchronously (fire-and-forget).

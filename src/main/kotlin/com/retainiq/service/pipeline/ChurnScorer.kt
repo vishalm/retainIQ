@@ -137,8 +137,16 @@ class ChurnScorer {
         return clamp(score, 0.0, 1.0)
     }
 
-    /** Shifted sigmoid function that maps the weighted score to a `[0, 1]` probability. */
-    private fun sigmoid(x: Double): Double = 1.0 / (1.0 + exp(-x * 4 + 2))
+    /**
+     * Maps the weighted raw score (0..1) to a churn probability (0..1).
+     *
+     * Tuned so that:
+     * - raw ~0.15 (stable subscriber) → ~0.15 churn probability
+     * - raw ~0.35 (moderate signals) → ~0.45 (MEDIUM)
+     * - raw ~0.50 (multiple signals) → ~0.70 (HIGH)
+     * - raw ~0.65+ (intent+competitor+usage) → ~0.85+ (CRITICAL)
+     */
+    private fun sigmoid(x: Double): Double = 1.0 / (1.0 + exp(-x * 8 + 3))
 
     /** Maps a continuous churn score to a discrete [ChurnBand]. */
     private fun toBand(score: Double): ChurnBand = when {
