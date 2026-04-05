@@ -242,16 +242,29 @@ footer .container { display: flex; align-items: center; justify-content: space-b
 .footer-links a { font-size: 0.82rem; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
 .footer-links a:hover { color: var(--heading); }
 
+/* ── Burger Menu ── */
+.burger { display: none; width: 36px; height: 36px; border: 1px solid var(--border); border-radius: 8px; background: var(--card); cursor: pointer; flex-direction: column; align-items: center; justify-content: center; gap: 5px; }
+.burger span { display: block; width: 18px; height: 2px; background: var(--icon-fill); border-radius: 2px; transition: all 0.3s; }
+.burger.open span:nth-child(1) { transform: rotate(45deg) translate(2.5px, 2.5px); }
+.burger.open span:nth-child(2) { opacity: 0; }
+.burger.open span:nth-child(3) { transform: rotate(-45deg) translate(2.5px, -2.5px); }
+.mobile-menu { display: none; position: fixed; top: 60px; left: 0; right: 0; background: var(--nav-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-bottom: 1px solid var(--border); padding: 16px 28px; z-index: 99; }
+.mobile-menu.open { display: flex; flex-direction: column; gap: 12px; }
+.mobile-menu a { color: var(--text-secondary); font-size: 1rem; font-weight: 500; text-decoration: none; padding: 8px 0; }
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
   section { padding: 80px 0; }
   .hero-metrics { grid-template-columns: repeat(2, 1fr); }
   .card-grid, .roi-grid { grid-template-columns: 1fr; }
+  .card-grid[style] { grid-template-columns: repeat(2, 1fr) !important; }
   .demo-grid { grid-template-columns: 1fr; }
   .pipeline-stages { flex-direction: column; }
   .stage-arrow { transform: rotate(90deg); }
   .nav-links { display: none; }
+  .burger { display: flex; }
   .comparison { overflow-x: auto; }
+  .nav-cta { display: none; }
 }
 </style>
 </head>
@@ -271,6 +284,9 @@ footer .container { display: flex; align-items: center; justify-content: space-b
         <a href="#demo">Demo</a>
         <a href="#roi">ROI</a>
       </div>
+      <button class="burger" id="burger" onclick="toggleMenu()" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
       <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme" id="themeBtn">
         <svg id="sunIcon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
         <svg id="moonIcon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -280,12 +296,20 @@ footer .container { display: flex; align-items: center; justify-content: space-b
   </div>
 </nav>
 
+<div class="mobile-menu" id="mobileMenu">
+  <a href="#problem" onclick="closeMenu()">Problem</a>
+  <a href="#solution" onclick="closeMenu()">How It Works</a>
+  <a href="#demo" onclick="closeMenu()">Demo</a>
+  <a href="#roi" onclick="closeMenu()">ROI</a>
+  <a href="https://github.com/vishalm/retainIQ">GitHub</a>
+</div>
+
 <!-- ═══ HERO ═══ -->
 <section class="hero">
   <div class="container hero-content">
-    <p class="eyebrow reveal">Real-Time Decisioning Engine</p>
-    <h1 class="reveal rd1">Every subscriber deserves<br>the <span class="gradient">right offer.</span></h1>
-    <p class="subtitle reveal rd2">RetainIQ scores churn risk, ranks VAS offers by retention and margin, and returns compliant results in under 200ms.</p>
+    <p class="eyebrow reveal">For Telecom Operators</p>
+    <h1 class="reveal rd1">Stop losing subscribers<br>to the <span class="gradient">wrong offer.</span></h1>
+    <p class="subtitle reveal rd2">RetainIQ is the real-time brain behind every retention conversation. One API call returns ranked, margin-aware, compliant VAS offers in under 200ms — so agents always know exactly what to say.</p>
     <div class="hero-ctas reveal rd3">
       <a href="#demo" class="btn btn-primary">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
@@ -311,7 +335,7 @@ footer .container { display: flex; align-items: center; justify-content: space-b
     <div class="section-header">
       <p class="eyebrow reveal">The Problem</p>
       <h2 class="reveal rd1">Retention is broken.<br>Offers are guesswork.</h2>
-      <p class="subtitle reveal rd2">Agents improvise. Margins erode. Compliance gaps widen. Subscribers leave.</p>
+      <p class="subtitle reveal rd2">Your agents improvise. Your margins erode. Compliance gaps widen. And 30% of at-risk subscribers leave within 72 hours of their first complaint.</p>
     </div>
     <div class="card-grid">
       <div class="card reveal">
@@ -345,7 +369,7 @@ footer .container { display: flex; align-items: center; justify-content: space-b
     <div class="section-header">
       <p class="eyebrow reveal">The Solution</p>
       <h2 class="reveal rd1">One API call.<br>Three ranked offers.</h2>
-      <p class="subtitle reveal rd2">A stateless decisioning layer that sits between your channels and backends. It doesn't replace anything — it makes everything smarter.</p>
+      <p class="subtitle reveal rd2">RetainIQ plugs into your existing channels and BSS. It doesn't replace Agentforce, Genesys, or your billing system — it sits between them and tells them which offer to present, with compliance and margin built in.</p>
     </div>
 
     <!-- Telco Stack SVG -->
@@ -572,6 +596,16 @@ footer .container { display: flex; align-items: center; justify-content: space-b
 </footer>
 
 <script>
+/* Burger Menu */
+function toggleMenu() {
+  document.getElementById('burger').classList.toggle('open');
+  document.getElementById('mobileMenu').classList.toggle('open');
+}
+function closeMenu() {
+  document.getElementById('burger').classList.remove('open');
+  document.getElementById('mobileMenu').classList.remove('open');
+}
+
 /* Theme */
 function toggleTheme() {
   const html = document.documentElement;
