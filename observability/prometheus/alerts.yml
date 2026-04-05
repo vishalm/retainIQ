@@ -1,0 +1,85 @@
+groups:
+  - name: retainiq_slo
+    rules:
+      # P99 latency > 180ms for 2 minutes (approaching 200ms SLA)
+      - alert: DecideLatencyHigh
+        expr: histogram_quantile(0.99, sum(rate(retainiq_decide_duration_seconds_bucket[2m])) by (le)) > 0.18
+        for: 2m
+        labels:
+          severity: warning
+          team: retainiq
+        annotations:
+          summary: "Decide API p99 latency exceeds 180ms"
+          description: "p99 latency is {{ $value | humanizeDuration }}, approaching the 200ms SLA."
+
+      # P99 latency > 200ms — SLA breach
+      - alert: DecideLatencySLABreach
+        expr: histogram_quantile(0.99, sum(rate(retainiq_decide_duration_seconds_bucket[5m])) by (le)) > 0.2
+        for: 1m
+        labels:
+          severity: critical
+          team: retainiq
+        annotations:
+          summary: "CRITICAL: Decide API p99 exceeds 200ms SLA"
+          description: "p99 latency is {{ $value | humanizeDuration }}. SLA breach in progress."
+
+      # Error rate > 0.5% for 1 minute
+      - alert: HighErrorRate
+        expr: sum(rate(http_server_requests_seconds_count{status=~"5.."}[1m])) / sum(rate(http_server_requests_seconds_count[1m])) > 0.005
+        for: 1m
+        labels:
+          severity: critical
+          team: retainiq
+        annotations:
+          summary: "5xx error rate exceeds 0.5%"
+          description: "Current error rate: {{ $value | humanizePercentage }}"
+
+      # Degraded decisions > 10%
+      - alert: HighDegradedRate
+        expr: sum(rate(retainiq_decide_total{degraded="true"}[5m])) / sum(rate(retainiq_decide_total[5m])) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          team: retainiq
+        annotations:
+          summary: "More than 10% of decisions are degraded"
+
+      # Redis cache hit rate < 85%
+      - alert: RedisCacheHitRateLow
+        expr: sum(rate(retainiq_cache_hit_total[5m])) / (sum(rate(retainiq_cache_hit_total[5m])) + sum(rate(retainiq_cache_miss_total[5m]))) < 0.85
+        for: 5m
+        labels:
+          severity: warning
+          team: retainiq
+        annotations:
+          summary: "Redis cache hit rate below 85%"
+
+      # Churn model drift — AUC proxy via prediction distribution shift
+      - alert: ChurnModelDrift
+        expr: abs(avg(retainiq_churn_score_summary{quantile="0.5"}) - 0.5) > 0.15
+        for: 30m
+        labels:
+          severity: warning
+          team: retainiq-ml
+        annotations:
+          summary: "Churn model median prediction has drifted significantly"
+
+  - name: retainiq_infra
+    rules:
+      # Pod memory > 80%
+      - alert: HighMemoryUsage
+        expr: jvm_memory_used_bytes{area="heap"} / jvm_memory_max_bytes{area="heap"} > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "JVM heap usage above 80%"
+
+      # Kafka consumer lag > 10k
+      - alert: KafkaConsumerLag
+        expr: kafka_consumer_lag > 10000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Kafka consumer lag exceeds 10k messages"

@@ -1,0 +1,52 @@
+# ── Build ──
+build/
+.gradle/
+out/
+*.class
+*.jar
+*.war
+
+# ── IDE ──
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+*.swp
+*.swo
+
+# ── Kotlin ──
+kotlin-js-store/
+
+# ── Node (console) ──
+console/node_modules/
+console/dist/
+console/.vite/
+
+# ── Environment ──
+.env
+.env.*
+!.env.example
+
+# ── OS ──
+.DS_Store
+Thumbs.db
+
+# ── Docker ──
+docker-compose.override.yml
+
+# ── Secrets ──
+*.pem
+*.key
+credentials.json
+
+# ── Claude ──
+.claude/
+
+# ── Observability data ──
+observability/grafana/data/
+observability/prometheus/data/
+
+# ── Logs ──
+*.log
+logs/

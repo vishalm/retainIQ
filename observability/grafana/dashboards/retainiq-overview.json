@@ -1,0 +1,685 @@
+{
+  "uid": "retainiq-overview",
+  "title": "RetainIQ — Decisioning Overview",
+  "description": "End-to-end observability for the RetainIQ telecom retention decisioning engine. 200ms p99 SLA.",
+  "tags": ["retainiq", "slo", "decisioning"],
+  "timezone": "browser",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "refresh": "10s",
+  "schemaVersion": 39,
+  "time": {
+    "from": "now-1h",
+    "to": "now"
+  },
+  "timepicker": {
+    "refresh_intervals": ["5s", "10s", "30s", "1m", "5m"]
+  },
+  "templating": {
+    "list": [
+      {
+        "name": "tenant",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "query": "label_values(retainiq_decide_duration_seconds_count, tenant)",
+        "refresh": 2,
+        "includeAll": true,
+        "allValue": ".*",
+        "current": { "text": "All", "value": "$__all" },
+        "multi": true
+      }
+    ]
+  },
+  "panels": [
+    {
+      "type": "row",
+      "title": "SLO Overview",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "collapsed": false
+    },
+    {
+      "type": "stat",
+      "title": "Decision Rate",
+      "gridPos": { "h": 4, "w": 4, "x": 0, "y": 1 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "area",
+        "textMode": "auto"
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(retainiq_decide_duration_seconds_count{tenant=~\"$tenant\"}[1m]))",
+          "legendFormat": "req/s"
+        }
+      ]
+    },
+    {
+      "type": "gauge",
+      "title": "P99 Latency",
+      "gridPos": { "h": 4, "w": 5, "x": 4, "y": 1 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "min": 0,
+          "max": 300,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "#EAB839", "value": 150 },
+              { "color": "orange", "value": 180 },
+              { "color": "red", "value": 200 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "showThresholdLabels": true,
+        "showThresholdMarkers": true
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(retainiq_decide_duration_seconds_bucket{tenant=~\"$tenant\"}[2m])) by (le)) * 1000",
+          "legendFormat": "p99"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Error Rate",
+      "gridPos": { "h": 4, "w": 5, "x": 9, "y": 1 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "decimals": 3,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 0.001 },
+              { "color": "red", "value": 0.005 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "area"
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(http_server_requests_seconds_count{uri=\"/api/v1/decide\", status=~\"5..\", tenant=~\"$tenant\"}[1m])) / sum(rate(http_server_requests_seconds_count{uri=\"/api/v1/decide\", tenant=~\"$tenant\"}[1m]))",
+          "legendFormat": "5xx rate"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Degraded Decision Rate",
+      "gridPos": { "h": 4, "w": 5, "x": 14, "y": 1 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "decimals": 2,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 0.05 },
+              { "color": "red", "value": 0.10 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "area"
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(retainiq_decide_total{degraded=\"true\", tenant=~\"$tenant\"}[5m])) / sum(rate(retainiq_decide_total{tenant=~\"$tenant\"}[5m]))",
+          "legendFormat": "degraded"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Cache Hit Rate",
+      "gridPos": { "h": 4, "w": 5, "x": 19, "y": 1 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 0.80 },
+              { "color": "green", "value": 0.90 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "area"
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(retainiq_cache_hit_total{tenant=~\"$tenant\"}[5m])) / (sum(rate(retainiq_cache_hit_total{tenant=~\"$tenant\"}[5m])) + sum(rate(retainiq_cache_miss_total{tenant=~\"$tenant\"}[5m])))",
+          "legendFormat": "hit rate"
+        }
+      ]
+    },
+    {
+      "type": "row",
+      "title": "Latency Deep Dive",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 5 },
+      "collapsed": false
+    },
+    {
+      "type": "timeseries",
+      "title": "Decision Latency Percentiles",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 6 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "fillOpacity": 10,
+            "pointSize": 5,
+            "lineWidth": 2
+          },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 200 }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "SLA (200ms)" },
+            "properties": [
+              { "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } },
+              { "id": "custom.lineStyle", "value": { "fill": "dash", "dash": [10, 10] } },
+              { "id": "custom.fillOpacity", "value": 0 },
+              { "id": "custom.lineWidth", "value": 2 }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max", "lastNotNull"] },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.50, sum(rate(retainiq_decide_duration_seconds_bucket{tenant=~\"$tenant\"}[2m])) by (le)) * 1000",
+          "legendFormat": "p50"
+        },
+        {
+          "expr": "histogram_quantile(0.90, sum(rate(retainiq_decide_duration_seconds_bucket{tenant=~\"$tenant\"}[2m])) by (le)) * 1000",
+          "legendFormat": "p90"
+        },
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(retainiq_decide_duration_seconds_bucket{tenant=~\"$tenant\"}[2m])) by (le)) * 1000",
+          "legendFormat": "p95"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(retainiq_decide_duration_seconds_bucket{tenant=~\"$tenant\"}[2m])) by (le)) * 1000",
+          "legendFormat": "p99"
+        },
+        {
+          "expr": "vector(200)",
+          "legendFormat": "SLA (200ms)"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Latency by Pipeline Stage",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 6 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "ms",
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 40,
+            "stacking": { "mode": "normal", "group": "A" },
+            "lineWidth": 1,
+            "lineInterpolation": "smooth"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "displayMode": "table", "placement": "bottom", "calcs": ["mean", "max"] },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(retainiq_stage_duration_seconds_bucket{stage=\"enrich\", tenant=~\"$tenant\"}[2m])) by (le)) * 1000",
+          "legendFormat": "enrich"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(retainiq_stage_duration_seconds_bucket{stage=\"score\", tenant=~\"$tenant\"}[2m])) by (le)) * 1000",
+          "legendFormat": "score"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(retainiq_stage_duration_seconds_bucket{stage=\"candidacy\", tenant=~\"$tenant\"}[2m])) by (le)) * 1000",
+          "legendFormat": "candidacy"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(retainiq_stage_duration_seconds_bucket{stage=\"rank\", tenant=~\"$tenant\"}[2m])) by (le)) * 1000",
+          "legendFormat": "rank"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(retainiq_stage_duration_seconds_bucket{stage=\"assemble\", tenant=~\"$tenant\"}[2m])) by (le)) * 1000",
+          "legendFormat": "assemble"
+        }
+      ]
+    },
+    {
+      "type": "row",
+      "title": "Business Metrics",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 14 },
+      "collapsed": false
+    },
+    {
+      "type": "timeseries",
+      "title": "Decisions by Channel",
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 15 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "reqps",
+          "custom": {
+            "drawStyle": "bars",
+            "fillOpacity": 80,
+            "stacking": { "mode": "normal", "group": "A" },
+            "lineWidth": 0
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi", "sort": "desc" }
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(retainiq_decide_total{channel=\"agentforce\", tenant=~\"$tenant\"}[5m])) or vector(0)",
+          "legendFormat": "Agentforce"
+        },
+        {
+          "expr": "sum(rate(retainiq_decide_total{channel=\"genesys\", tenant=~\"$tenant\"}[5m])) or vector(0)",
+          "legendFormat": "Genesys"
+        },
+        {
+          "expr": "sum(rate(retainiq_decide_total{channel=\"app\", tenant=~\"$tenant\"}[5m])) or vector(0)",
+          "legendFormat": "App"
+        },
+        {
+          "expr": "sum(rate(retainiq_decide_total{channel=\"ivr\", tenant=~\"$tenant\"}[5m])) or vector(0)",
+          "legendFormat": "IVR"
+        }
+      ]
+    },
+    {
+      "type": "piechart",
+      "title": "Decisions by Churn Band",
+      "gridPos": { "h": 8, "w": 5, "x": 8, "y": 15 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "LOW" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "green" } }] },
+          { "matcher": { "id": "byName", "options": "MEDIUM" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "yellow" } }] },
+          { "matcher": { "id": "byName", "options": "HIGH" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "orange" } }] },
+          { "matcher": { "id": "byName", "options": "CRITICAL" }, "properties": [{ "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } }] }
+        ]
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "pieType": "donut",
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "single" }
+      },
+      "targets": [
+        {
+          "expr": "sum(increase(retainiq_decide_total{churn_band=\"LOW\", tenant=~\"$tenant\"}[1h]))",
+          "legendFormat": "LOW"
+        },
+        {
+          "expr": "sum(increase(retainiq_decide_total{churn_band=\"MEDIUM\", tenant=~\"$tenant\"}[1h]))",
+          "legendFormat": "MEDIUM"
+        },
+        {
+          "expr": "sum(increase(retainiq_decide_total{churn_band=\"HIGH\", tenant=~\"$tenant\"}[1h]))",
+          "legendFormat": "HIGH"
+        },
+        {
+          "expr": "sum(increase(retainiq_decide_total{churn_band=\"CRITICAL\", tenant=~\"$tenant\"}[1h]))",
+          "legendFormat": "CRITICAL"
+        }
+      ]
+    },
+    {
+      "type": "stat",
+      "title": "Offer Attach Rate",
+      "gridPos": { "h": 8, "w": 4, "x": 13, "y": 15 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percentunit",
+          "decimals": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "yellow", "value": 0.5 },
+              { "color": "green", "value": 0.7 }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "area",
+        "textMode": "value_and_name"
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(retainiq_outcome_total{outcome=\"accepted\", tenant=~\"$tenant\"}[1h])) / sum(rate(retainiq_decide_total{has_offers=\"true\", tenant=~\"$tenant\"}[1h]))",
+          "legendFormat": "attach rate"
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Top Offered SKUs (last 1h)",
+      "gridPos": { "h": 8, "w": 7, "x": 17, "y": 15 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {},
+        "overrides": [
+          { "matcher": { "id": "byName", "options": "Value" }, "properties": [{ "id": "displayName", "value": "Offers" }] },
+          { "matcher": { "id": "byName", "options": "sku" }, "properties": [{ "id": "displayName", "value": "SKU" }] }
+        ]
+      },
+      "options": {
+        "showHeader": true,
+        "sortBy": [{ "displayName": "Offers", "desc": true }]
+      },
+      "transformations": [
+        { "id": "sortBy", "options": { "sort": [{ "field": "Value", "desc": true }] } },
+        { "id": "limit", "options": { "limitField": 20 } }
+      ],
+      "targets": [
+        {
+          "expr": "topk(20, sum by (sku) (increase(retainiq_offer_total{tenant=~\"$tenant\"}[1h])))",
+          "legendFormat": "{{sku}}",
+          "format": "table",
+          "instant": true
+        }
+      ]
+    },
+    {
+      "type": "row",
+      "title": "Infrastructure",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 23 },
+      "collapsed": false
+    },
+    {
+      "type": "timeseries",
+      "title": "JVM Heap Memory",
+      "gridPos": { "h": 7, "w": 6, "x": 0, "y": 24 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "bytes",
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 15,
+            "lineWidth": 2,
+            "lineInterpolation": "smooth"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byName", "options": "max" },
+            "properties": [
+              { "id": "custom.lineStyle", "value": { "fill": "dash", "dash": [10, 10] } },
+              { "id": "custom.fillOpacity", "value": 0 },
+              { "id": "color", "value": { "mode": "fixed", "fixedColor": "red" } }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi" }
+      },
+      "targets": [
+        {
+          "expr": "sum(jvm_memory_used_bytes{area=\"heap\"})",
+          "legendFormat": "used"
+        },
+        {
+          "expr": "sum(jvm_memory_committed_bytes{area=\"heap\"})",
+          "legendFormat": "committed"
+        },
+        {
+          "expr": "sum(jvm_memory_max_bytes{area=\"heap\"})",
+          "legendFormat": "max"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "GC Pause Duration",
+      "gridPos": { "h": 7, "w": 6, "x": 6, "y": 24 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "custom": {
+            "drawStyle": "line",
+            "fillOpacity": 20,
+            "lineWidth": 2,
+            "lineInterpolation": "smooth"
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi" }
+      },
+      "targets": [
+        {
+          "expr": "rate(jvm_gc_pause_seconds_sum[1m])",
+          "legendFormat": "{{action}} {{cause}}"
+        },
+        {
+          "expr": "jvm_gc_pause_seconds_max",
+          "legendFormat": "max {{action}}"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "Redis Ops/s & Latency",
+      "gridPos": { "h": 7, "w": 6, "x": 12, "y": 24 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "lineInterpolation": "smooth"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byRegexp", "options": ".*latency.*" },
+            "properties": [
+              { "id": "unit", "value": "ms" },
+              { "id": "custom.axisPlacement", "value": "right" }
+            ]
+          },
+          {
+            "matcher": { "id": "byRegexp", "options": ".*ops.*" },
+            "properties": [
+              { "id": "unit", "value": "ops" }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi" }
+      },
+      "targets": [
+        {
+          "expr": "sum(rate(spring_data_redis_commands_seconds_count[1m]))",
+          "legendFormat": "ops/s"
+        },
+        {
+          "expr": "histogram_quantile(0.99, sum(rate(spring_data_redis_commands_seconds_bucket[2m])) by (le)) * 1000",
+          "legendFormat": "p99 latency (ms)"
+        }
+      ]
+    },
+    {
+      "type": "timeseries",
+      "title": "PostgreSQL Connections & Kafka Lag",
+      "gridPos": { "h": 7, "w": 6, "x": 18, "y": 24 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "drawStyle": "line",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "lineInterpolation": "smooth"
+          }
+        },
+        "overrides": [
+          {
+            "matcher": { "id": "byRegexp", "options": ".*lag.*" },
+            "properties": [
+              { "id": "custom.axisPlacement", "value": "right" },
+              { "id": "unit", "value": "short" }
+            ]
+          },
+          {
+            "matcher": { "id": "byRegexp", "options": ".*conn.*" },
+            "properties": [
+              { "id": "unit", "value": "short" }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "legend": { "displayMode": "list", "placement": "bottom" },
+        "tooltip": { "mode": "multi" }
+      },
+      "targets": [
+        {
+          "expr": "r2dbc_pool_acquired_size",
+          "legendFormat": "active connections"
+        },
+        {
+          "expr": "sum(kafka_consumer_lag) by (topic)",
+          "legendFormat": "kafka lag — {{topic}}"
+        }
+      ]
+    },
+    {
+      "type": "row",
+      "title": "Traces & Errors",
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 31 },
+      "collapsed": false
+    },
+    {
+      "type": "table",
+      "title": "Recent Errors (Loki)",
+      "gridPos": { "h": 8, "w": 14, "x": 0, "y": 32 },
+      "datasource": { "type": "loki", "uid": "loki" },
+      "options": {
+        "showHeader": true,
+        "sortBy": [{ "displayName": "Time", "desc": true }]
+      },
+      "targets": [
+        {
+          "expr": "{service=\"retainiq\"} |= \"ERROR\" | json | line_format \"{{.timestamp}} {{.level}} [{{.traceId}}] {{.message}}\"",
+          "legendFormat": "",
+          "maxLines": 100
+        }
+      ]
+    },
+    {
+      "type": "heatmap",
+      "title": "Trace Duration Heatmap",
+      "gridPos": { "h": 8, "w": 10, "x": 14, "y": 32 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "scaleDistribution": { "type": "log", "log": 2 }
+          }
+        }
+      },
+      "options": {
+        "calculate": false,
+        "yAxis": { "unit": "s" },
+        "color": { "scheme": "Spectral", "reverse": true },
+        "cellGap": 1,
+        "tooltip": { "show": true, "yHistogram": true }
+      },
+      "targets": [
+        {
+          "expr": "sum(increase(retainiq_decide_duration_seconds_bucket{tenant=~\"$tenant\"}[1m])) by (le)",
+          "legendFormat": "{{le}}",
+          "format": "heatmap"
+        }
+      ]
+    }
+  ]
+}

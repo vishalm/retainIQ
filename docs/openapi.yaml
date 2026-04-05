@@ -1,0 +1,810 @@
+openapi: 3.1.0
+info:
+  title: RetainIQ API
+  version: 1.0.0
+  description: |
+    Real-time VAS offer decisioning API for telecom operators.
+
+    RetainIQ evaluates subscriber signals in real time and returns ranked,
+    margin-aware retention offers with regulatory metadata. The platform
+    targets < 200 ms p99 latency on the `/v1/decide` endpoint.
+
+    ## Authentication
+    All endpoints require an OAuth 2.0 Bearer token obtained via the
+    `client_credentials` grant at `/v1/auth/token`.
+
+    ## Rate Limits
+    Every response includes `X-RateLimit-Limit`, `X-RateLimit-Remaining`,
+    and `X-RateLimit-Reset` headers. When the limit is exceeded the API
+    returns `429 Too Many Requests`.
+
+    ## Degraded Mode
+    When upstream dependencies are unhealthy the `/v1/decide` endpoint may
+    still return `200 OK` with `degraded: true` and a reduced offer set.
+    A `503 Service Unavailable` is returned only when no decision can be
+    produced at all.
+  contact:
+    name: RetainIQ Engineering
+    email: platform@retainiq.com
+  license:
+    name: Proprietary
+
+servers:
+  - url: https://api.retainiq.com
+    description: Production
+  - url: https://api.staging.retainiq.com
+    description: Staging
+
+tags:
+  - name: Decisions
+    description: Real-time offer decisioning
+  - name: Outcomes
+    description: Decision feedback loop
+  - name: Catalog
+    description: VAS catalog synchronisation
+
+security:
+  - oauth2: []
+
+paths:
+  # ──────────────────────────────────────────────────────────────────────
+  # POST /v1/decide
+  # ──────────────────────────────────────────────────────────────────────
+  /v1/decide:
+    post:
+      operationId: createDecision
+      summary: Request a real-time retention decision
+      description: |
+        Evaluates subscriber signals and returns ranked VAS offers optimised
+        for retention probability and margin. Target latency is < 200 ms p99.
+      tags: [Decisions]
+      parameters:
+        - $ref: "#/components/parameters/TenantId"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/DecisionRequest"
+            example:
+              subscriber_id: "971501234567"
+              channel: agentforce
+              signals:
+                frustration_score: 0.82
+                intent: cancel
+                session_duration_s: 340
+                prior_contacts_30d: 4
+              context:
+                reason_code: competitor
+                market: AE
+              options:
+                max_offers: 3
+                explain: true
+                dry_run: false
+      responses:
+        "200":
+          description: Decision produced successfully.
+          headers:
+            X-Decision-ID:
+              schema:
+                type: string
+                format: uuid
+              description: Unique decision identifier (mirrors body field).
+            X-Latency-Ms:
+              schema:
+                type: integer
+              description: Server-side processing time in milliseconds.
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/X-RateLimit-Limit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/X-RateLimit-Remaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/X-RateLimit-Reset"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DecisionResponse"
+              example:
+                decision_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+                subscriber:
+                  segment: "high-value-postpaid"
+                  churn_score: 0.87
+                  churn_band: CRITICAL
+                  tenure_days: 1095
+                offers:
+                  - rank: 1
+                    sku: "VAS-ENT-PREMIUM-001"
+                    name: "Premium Entertainment Bundle"
+                    retention_probability: 0.74
+                    margin_impact: -12.50
+                    script_hint: "I can see you've been a loyal customer for 3 years. I'd like to offer you our Premium Entertainment Bundle at no extra cost for 3 months."
+                    deep_link: "https://app.operator.com/offer/VAS-ENT-PREMIUM-001?sid=971501234567"
+                    regulatory:
+                      consent_required: true
+                      disclosure: "Subscription auto-renews at AED 49/mo after the promotional period."
+                  - rank: 2
+                    sku: "VAS-DATA-BOOST-050"
+                    name: "50 GB Data Boost"
+                    retention_probability: 0.61
+                    margin_impact: -8.00
+                    script_hint: "We also have a 50 GB data boost we can add to your plan right now."
+                    deep_link: "https://app.operator.com/offer/VAS-DATA-BOOST-050?sid=971501234567"
+                    regulatory:
+                      consent_required: false
+                      disclosure: null
+                action: present_offers
+                fallback: false
+                degraded: false
+                confidence: HIGH
+                latency_ms: 47
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  # ──────────────────────────────────────────────────────────────────────
+  # POST /v1/outcome
+  # ──────────────────────────────────────────────────────────────────────
+  /v1/outcome:
+    post:
+      operationId: recordOutcome
+      summary: Record the outcome of a decision
+      description: |
+        Closes the feedback loop by recording whether the subscriber accepted,
+        declined, or did not respond to the presented offer. This data is used
+        to retrain the decisioning model.
+      tags: [Outcomes]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/OutcomeRequest"
+            example:
+              decision_id: "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+              offer_sku: "VAS-ENT-PREMIUM-001"
+              outcome: accepted
+              revenue_delta: 49.00
+              churn_prevented: true
+      responses:
+        "204":
+          description: Outcome recorded.
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/X-RateLimit-Limit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/X-RateLimit-Remaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/X-RateLimit-Reset"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  # ──────────────────────────────────────────────────────────────────────
+  # POST /v1/catalog/sync
+  # ──────────────────────────────────────────────────────────────────────
+  /v1/catalog/sync:
+    post:
+      operationId: syncCatalog
+      summary: Push VAS catalog updates
+      description: |
+        Receives product lifecycle events from the operator's catalog system.
+        Supports incremental updates and full syncs. The request body must be
+        signed with HMAC-SHA256 and the signature passed in `X-Signature`.
+      tags: [Catalog]
+      parameters:
+        - $ref: "#/components/parameters/TenantId"
+        - name: X-Signature
+          in: header
+          required: true
+          description: HMAC-SHA256 signature of the raw request body using the tenant's shared secret.
+          schema:
+            type: string
+            example: "sha256=a1b2c3d4e5f6..."
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CatalogSyncRequest"
+            example:
+              event: product.updated
+              products:
+                - sku: "VAS-ENT-PREMIUM-001"
+                  name: "Premium Entertainment Bundle"
+                  category: entertainment
+                  markets: [AE, SA]
+                  margin: 32.50
+                  eligibility_rules:
+                    - "postpaid_only"
+                    - "tenure_gt_180"
+                  bundle_with: ["VAS-DATA-BOOST-050"]
+                  incompatible_with: ["VAS-ENT-BASIC-001"]
+                  upgrade_from: ["VAS-ENT-BASIC-001"]
+                  regulatory:
+                    consent_required: true
+                    disclosure_text:
+                      AE: "Subscription auto-renews at AED 49/mo after the promotional period."
+                      SA: "الاشتراك يتجدد تلقائياً بسعر 49 ريال/شهر بعد فترة العرض."
+              full_sync: false
+      responses:
+        "202":
+          description: Catalog sync accepted for processing.
+          headers:
+            X-RateLimit-Limit:
+              $ref: "#/components/headers/X-RateLimit-Limit"
+            X-RateLimit-Remaining:
+              $ref: "#/components/headers/X-RateLimit-Remaining"
+            X-RateLimit-Reset:
+              $ref: "#/components/headers/X-RateLimit-Reset"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CatalogSyncResponse"
+              example:
+                sync_id: "f47ac10b-58cc-4372-a567-0e02b2c3d479"
+                status: processing
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          $ref: "#/components/responses/Unauthorized"
+        "403":
+          $ref: "#/components/responses/Forbidden"
+        "422":
+          $ref: "#/components/responses/UnprocessableEntity"
+        "429":
+          $ref: "#/components/responses/TooManyRequests"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+components:
+  # ════════════════════════════════════════════════════════════════════════
+  # Security Schemes
+  # ════════════════════════════════════════════════════════════════════════
+  securitySchemes:
+    oauth2:
+      type: oauth2
+      description: OAuth 2.0 client credentials flow.
+      flows:
+        clientCredentials:
+          tokenUrl: /v1/auth/token
+          scopes:
+            decide: Request retention decisions
+            outcome:write: Record decision outcomes
+            catalog:write: Push catalog updates
+
+  # ════════════════════════════════════════════════════════════════════════
+  # Parameters
+  # ════════════════════════════════════════════════════════════════════════
+  parameters:
+    TenantId:
+      name: X-Tenant-ID
+      in: header
+      required: true
+      description: Operator tenant identifier.
+      schema:
+        type: string
+        example: "op-du-ae"
+
+  # ════════════════════════════════════════════════════════════════════════
+  # Headers
+  # ════════════════════════════════════════════════════════════════════════
+  headers:
+    X-RateLimit-Limit:
+      description: Maximum requests permitted in the current window.
+      schema:
+        type: integer
+        example: 1000
+    X-RateLimit-Remaining:
+      description: Requests remaining in the current window.
+      schema:
+        type: integer
+        example: 998
+    X-RateLimit-Reset:
+      description: Unix epoch timestamp (seconds) when the window resets.
+      schema:
+        type: integer
+        example: 1717027200
+
+  # ════════════════════════════════════════════════════════════════════════
+  # Schemas
+  # ════════════════════════════════════════════════════════════════════════
+  schemas:
+    # ── Decision ────────────────────────────────────────────────────────
+    DecisionRequest:
+      type: object
+      required: [subscriber_id, channel]
+      properties:
+        subscriber_id:
+          type: string
+          description: MSISDN or internal subscriber identifier.
+          example: "971501234567"
+        channel:
+          type: string
+          enum: [agentforce, genesys, app, ivr]
+          description: Interaction channel originating the request.
+        signals:
+          $ref: "#/components/schemas/Signals"
+        context:
+          $ref: "#/components/schemas/Context"
+        options:
+          $ref: "#/components/schemas/DecisionOptions"
+
+    Signals:
+      type: object
+      description: Real-time behavioural signals from the interaction.
+      properties:
+        frustration_score:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          description: NLP/voice-derived frustration level (0 = calm, 1 = highly frustrated).
+        intent:
+          type: string
+          enum: [cancel, complaint, billing, upgrade]
+        session_duration_s:
+          type: integer
+          minimum: 0
+          description: Current session duration in seconds.
+        prior_contacts_30d:
+          type: integer
+          minimum: 0
+          description: Number of contacts in the last 30 days.
+
+    Context:
+      type: object
+      description: Contextual metadata about the interaction.
+      properties:
+        reason_code:
+          type: string
+          enum: [billing, network, competitor]
+        market:
+          type: string
+          enum: [AE, SA, KW, BH, OM]
+          description: ISO 3166-1 alpha-2 market code.
+
+    DecisionOptions:
+      type: object
+      properties:
+        max_offers:
+          type: integer
+          minimum: 1
+          maximum: 10
+          default: 3
+          description: Maximum number of offers to return.
+        explain:
+          type: boolean
+          default: false
+          description: Include human-readable explanation metadata.
+        dry_run:
+          type: boolean
+          default: false
+          description: Evaluate without persisting the decision or updating counters.
+
+    DecisionResponse:
+      type: object
+      required:
+        - decision_id
+        - subscriber
+        - offers
+        - action
+        - fallback
+        - degraded
+        - confidence
+        - latency_ms
+      properties:
+        decision_id:
+          type: string
+          format: uuid
+        subscriber:
+          $ref: "#/components/schemas/SubscriberProfile"
+        offers:
+          type: array
+          items:
+            $ref: "#/components/schemas/Offer"
+        action:
+          type: string
+          enum: [present_offers, escalate, no_action]
+          description: Recommended agent action.
+        fallback:
+          type: boolean
+          description: True if the offer set was produced by fallback rules rather than the ML model.
+        degraded:
+          type: boolean
+          description: True if one or more upstream dependencies were unhealthy during evaluation.
+        confidence:
+          type: string
+          enum: [HIGH, MEDIUM, LOW]
+        latency_ms:
+          type: integer
+          description: Server-side processing time in milliseconds.
+
+    SubscriberProfile:
+      type: object
+      required: [segment, churn_score, churn_band, tenure_days]
+      properties:
+        segment:
+          type: string
+          description: Subscriber segment label.
+        churn_score:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+          description: Model-predicted churn probability.
+        churn_band:
+          type: string
+          enum: [LOW, MEDIUM, HIGH, CRITICAL]
+        tenure_days:
+          type: integer
+          minimum: 0
+
+    Offer:
+      type: object
+      required:
+        - rank
+        - sku
+        - name
+        - retention_probability
+        - margin_impact
+        - script_hint
+        - deep_link
+        - regulatory
+      properties:
+        rank:
+          type: integer
+          minimum: 1
+        sku:
+          type: string
+        name:
+          type: string
+        retention_probability:
+          type: number
+          format: float
+          minimum: 0
+          maximum: 1
+        margin_impact:
+          type: number
+          format: float
+          description: Estimated margin impact in local currency (negative = cost).
+        script_hint:
+          type: string
+          description: Suggested agent script snippet.
+        deep_link:
+          type: string
+          format: uri
+          description: Direct link to activate or present the offer.
+        regulatory:
+          $ref: "#/components/schemas/OfferRegulatory"
+
+    OfferRegulatory:
+      type: object
+      required: [consent_required]
+      properties:
+        consent_required:
+          type: boolean
+          description: Whether explicit subscriber consent must be obtained before activation.
+        disclosure:
+          type: string
+          nullable: true
+          description: Regulatory disclosure text to read or display, or null if none required.
+
+    # ── Outcome ─────────────────────────────────────────────────────────
+    OutcomeRequest:
+      type: object
+      required: [decision_id, offer_sku, outcome]
+      properties:
+        decision_id:
+          type: string
+          format: uuid
+        offer_sku:
+          type: string
+        outcome:
+          type: string
+          enum: [accepted, declined, no_response]
+        revenue_delta:
+          type: number
+          format: float
+          description: Revenue change attributed to this outcome (local currency).
+        churn_prevented:
+          type: boolean
+          description: Whether the subscriber was retained as a result of this interaction.
+
+    # ── Catalog ─────────────────────────────────────────────────────────
+    CatalogSyncRequest:
+      type: object
+      required: [event, products]
+      properties:
+        event:
+          type: string
+          enum: [product.updated, product.created, product.retired]
+        products:
+          type: array
+          minItems: 1
+          items:
+            $ref: "#/components/schemas/CatalogProduct"
+        full_sync:
+          type: boolean
+          default: false
+          description: When true, the payload replaces the entire catalog for this tenant.
+
+    CatalogProduct:
+      type: object
+      required: [sku, name, category, markets, margin]
+      properties:
+        sku:
+          type: string
+        name:
+          type: string
+        category:
+          type: string
+          description: Product category (e.g., entertainment, data, voice, device-protection).
+        markets:
+          type: array
+          items:
+            type: string
+            enum: [AE, SA, KW, BH, OM]
+          minItems: 1
+        margin:
+          type: number
+          format: float
+          description: Unit margin in base currency.
+        eligibility_rules:
+          type: array
+          items:
+            type: string
+          default: []
+          description: Rule identifiers that must all pass for the product to be offered.
+        bundle_with:
+          type: array
+          items:
+            type: string
+          default: []
+          description: SKUs that may be bundled with this product.
+        incompatible_with:
+          type: array
+          items:
+            type: string
+          default: []
+          description: SKUs that conflict with this product.
+        upgrade_from:
+          type: array
+          items:
+            type: string
+          default: []
+          description: SKUs this product can replace as an upgrade path.
+        regulatory:
+          $ref: "#/components/schemas/ProductRegulatory"
+
+    ProductRegulatory:
+      type: object
+      required: [consent_required]
+      properties:
+        consent_required:
+          type: boolean
+        disclosure_text:
+          type: object
+          additionalProperties:
+            type: string
+          description: Map of market code to localised disclosure text.
+
+    CatalogSyncResponse:
+      type: object
+      required: [sync_id, status]
+      properties:
+        sync_id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum: [processing, completed, failed]
+
+    # ── Errors ──────────────────────────────────────────────────────────
+    ErrorResponse:
+      type: object
+      required: [error]
+      properties:
+        error:
+          type: object
+          required: [code, message, trace_id]
+          properties:
+            code:
+              type: string
+              description: Machine-readable error code.
+              examples:
+                - invalid_subscriber
+                - tenant_not_found
+                - rate_limit_exceeded
+                - validation_error
+                - service_unavailable
+            message:
+              type: string
+              description: Human-readable error description.
+            trace_id:
+              type: string
+              format: uuid
+              description: Correlation ID for support and debugging.
+            details:
+              type: object
+              nullable: true
+              description: Structured error details (e.g., field-level validation errors).
+              additionalProperties: true
+
+  # ════════════════════════════════════════════════════════════════════════
+  # Reusable Responses
+  # ════════════════════════════════════════════════════════════════════════
+  responses:
+    BadRequest:
+      description: The request body is malformed or missing required fields.
+      headers:
+        X-RateLimit-Limit:
+          $ref: "#/components/headers/X-RateLimit-Limit"
+        X-RateLimit-Remaining:
+          $ref: "#/components/headers/X-RateLimit-Remaining"
+        X-RateLimit-Reset:
+          $ref: "#/components/headers/X-RateLimit-Reset"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            error:
+              code: bad_request
+              message: "Request body could not be parsed as valid JSON."
+              trace_id: "c0ffee00-1234-5678-9abc-def012345678"
+              details: null
+
+    Unauthorized:
+      description: Bearer token is missing, expired, or invalid.
+      headers:
+        X-RateLimit-Limit:
+          $ref: "#/components/headers/X-RateLimit-Limit"
+        X-RateLimit-Remaining:
+          $ref: "#/components/headers/X-RateLimit-Remaining"
+        X-RateLimit-Reset:
+          $ref: "#/components/headers/X-RateLimit-Reset"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            error:
+              code: unauthorized
+              message: "Bearer token is invalid or has expired."
+              trace_id: "c0ffee00-1234-5678-9abc-def012345679"
+              details: null
+
+    Forbidden:
+      description: Authenticated principal does not have access to the specified tenant.
+      headers:
+        X-RateLimit-Limit:
+          $ref: "#/components/headers/X-RateLimit-Limit"
+        X-RateLimit-Remaining:
+          $ref: "#/components/headers/X-RateLimit-Remaining"
+        X-RateLimit-Reset:
+          $ref: "#/components/headers/X-RateLimit-Reset"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            error:
+              code: tenant_not_found
+              message: "The X-Tenant-ID does not match any tenant accessible by this credential."
+              trace_id: "c0ffee00-1234-5678-9abc-def01234567a"
+              details: null
+
+    NotFound:
+      description: The referenced resource was not found.
+      headers:
+        X-RateLimit-Limit:
+          $ref: "#/components/headers/X-RateLimit-Limit"
+        X-RateLimit-Remaining:
+          $ref: "#/components/headers/X-RateLimit-Remaining"
+        X-RateLimit-Reset:
+          $ref: "#/components/headers/X-RateLimit-Reset"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            error:
+              code: decision_not_found
+              message: "No decision found with the given decision_id."
+              trace_id: "c0ffee00-1234-5678-9abc-def01234567b"
+              details: null
+
+    UnprocessableEntity:
+      description: Request is well-formed but contains semantic validation errors.
+      headers:
+        X-RateLimit-Limit:
+          $ref: "#/components/headers/X-RateLimit-Limit"
+        X-RateLimit-Remaining:
+          $ref: "#/components/headers/X-RateLimit-Remaining"
+        X-RateLimit-Reset:
+          $ref: "#/components/headers/X-RateLimit-Reset"
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            error:
+              code: validation_error
+              message: "One or more fields failed validation."
+              trace_id: "c0ffee00-1234-5678-9abc-def01234567c"
+              details:
+                fields:
+                  - field: subscriber_id
+                    reason: "invalid_subscriber"
+                  - field: signals.frustration_score
+                    reason: "Must be between 0 and 1."
+
+    TooManyRequests:
+      description: Rate limit exceeded.
+      headers:
+        X-RateLimit-Limit:
+          $ref: "#/components/headers/X-RateLimit-Limit"
+        X-RateLimit-Remaining:
+          $ref: "#/components/headers/X-RateLimit-Remaining"
+        X-RateLimit-Reset:
+          $ref: "#/components/headers/X-RateLimit-Reset"
+        Retry-After:
+          description: Seconds to wait before retrying.
+          schema:
+            type: integer
+            example: 30
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            error:
+              code: rate_limit_exceeded
+              message: "Rate limit exceeded. Retry after the period indicated in the Retry-After header."
+              trace_id: "c0ffee00-1234-5678-9abc-def01234567d"
+              details: null
+
+    ServiceUnavailable:
+      description: The service is temporarily unable to produce a decision.
+      headers:
+        X-RateLimit-Limit:
+          $ref: "#/components/headers/X-RateLimit-Limit"
+        X-RateLimit-Remaining:
+          $ref: "#/components/headers/X-RateLimit-Remaining"
+        X-RateLimit-Reset:
+          $ref: "#/components/headers/X-RateLimit-Reset"
+        Retry-After:
+          description: Seconds to wait before retrying.
+          schema:
+            type: integer
+            example: 5
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            error:
+              code: service_unavailable
+              message: "The decisioning service is temporarily unavailable. Please retry."
+              trace_id: "c0ffee00-1234-5678-9abc-def01234567e"
+              details: null

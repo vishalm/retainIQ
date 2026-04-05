@@ -1,0 +1,130 @@
+spring:
+  application:
+    name: retainiq
+  r2dbc:
+    url: r2dbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:retainiq}
+    username: ${DB_USER:retainiq}
+    password: ${DB_PASSWORD:retainiq}
+  flyway:
+    enabled: true
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:retainiq}
+    user: ${DB_USER:retainiq}
+    password: ${DB_PASSWORD:retainiq}
+    locations: classpath:db/migration/platform
+    schemas: platform
+    default-schema: platform
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+      timeout: 500ms
+  kafka:
+    bootstrap-servers: ${KAFKA_BROKERS:localhost:9092}
+    consumer:
+      group-id: retainiq-outcome-writer
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+server:
+  port: ${PORT:8080}
+  shutdown: graceful
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,prometheus,metrics
+  endpoint:
+    health:
+      show-details: always
+      show-components: always
+  tracing:
+    sampling:
+      probability: 1.0  # 100% in dev, reduce in prod
+    propagation:
+      type: w3c
+  metrics:
+    tags:
+      application: retainiq
+    distribution:
+      percentiles-histogram:
+        http.server.requests: true
+      sla:
+        http.server.requests: 50ms,100ms,150ms,200ms,500ms
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    enabled: true
+  show-actuator: false
+
+retainiq:
+  security:
+    jwt:
+      secret: ${JWT_SECRET:change-me-in-production-this-must-be-at-least-256-bits-long!!}
+      expiry-minutes: 15
+    hmac:
+      secret: ${HMAC_SECRET:change-me-in-production}
+  decision:
+    timeout-ms: 200
+    max-offers: 5
+    default-market: AE
+  ranking:
+    alpha: 0.45  # retention probability weight
+    beta: 0.30   # margin weight
+    gamma: 0.15  # spend cap pressure weight
+    delta: 0.10  # context match weight
+  cache:
+    subscriber-ttl-seconds: 300
+    catalog-ttl-seconds: 900
+    usage-ttl-seconds: 60
+    rules-ttl-seconds: 3600
+  rate-limit:
+    requests-per-second: 1000
+    burst-size: 5000
+
+logging:
+  level:
+    com.retainiq: INFO
+    org.springframework.r2dbc: WARN
+  pattern:
+    console: "%d{ISO8601} [%thread] %-5level %logger{36} - %msg [tenant=%X{tenantId}] [traceId=%X{traceId}]%n"
+
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+  r2dbc:
+    url: r2dbc:postgresql://localhost:5432/retainiq
+  data:
+    redis:
+      host: localhost
+
+logging:
+  level:
+    com.retainiq: DEBUG
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+springdoc:
+  swagger-ui:
+    enabled: false
+  api-docs:
+    enabled: false
+
+logging:
+  level:
+    com.retainiq: INFO
+    root: WARN

@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RetainIQ — Real-time VAS Offer Decisioning for Telecom</title>
+<meta name="description" content="Ranked, margin-aware, compliant retention offers in under 200ms. Integrated in hours, not months.">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0a0f1e;--card:#111827;--border:#1f2937;--cyan:#0ea5e9;--green:#22c55e;--text:#e2e8f0;--muted:#94a3b8;--red:#ef4444;--orange:#f59e0b}
+html{scroll-behavior:smooth}
+body{font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;overflow-x:hidden}
+a{color:var(--cyan);text-decoration:none}
+a:hover{text-decoration:underline}
+.container{max-width:1200px;margin:0 auto;padding:0 24px}
+section{padding:100px 0}
+
+/* Animations */
+@keyframes glow{0%,100%{text-shadow:0 0 20px rgba(14,165,233,.3),0 0 40px rgba(14,165,233,.1)}50%{text-shadow:0 0 30px rgba(14,165,233,.5),0 0 60px rgba(14,165,233,.2)}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+@keyframes countUp{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:scale(1)}}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+@keyframes typing{from{width:0}to{width:100%}}
+@keyframes blink{0%,100%{border-color:var(--cyan)}50%{border-color:transparent}}
+@keyframes flowDash{to{stroke-dashoffset:0}}
+@keyframes gradientMove{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+.reveal{opacity:0;transform:translateY(40px);transition:opacity .8s ease,transform .8s ease}
+.reveal.visible{opacity:1;transform:translateY(0)}
+.reveal-delay-1{transition-delay:.1s}
+.reveal-delay-2{transition-delay:.2s}
+.reveal-delay-3{transition-delay:.3s}
+
+/* Hero */
+.hero{min-height:100vh;display:flex;align-items:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,#0a0f1e 0%,#0c1929 30%,#0a1a2e 60%,#0d1f35 100%);background-size:300% 300%;animation:gradientMove 12s ease infinite;z-index:0}
+.hero::after{content:'';position:absolute;top:-50%;right:-30%;width:800px;height:800px;border-radius:50%;background:radial-gradient(circle,rgba(14,165,233,.08) 0%,transparent 70%);z-index:0}
+.hero .container{position:relative;z-index:1;text-align:center}
+.hero-logo{font-size:clamp(3rem,8vw,5rem);font-weight:800;letter-spacing:-.02em;animation:glow 3s ease-in-out infinite;color:#fff;margin-bottom:16px}
+.hero-logo span{color:var(--cyan)}
+.hero-tagline{font-size:clamp(1.1rem,3vw,1.5rem);color:var(--muted);max-width:700px;margin:0 auto 12px}
+.hero-sub{font-size:clamp(.9rem,2vw,1.1rem);color:var(--muted);max-width:650px;margin:0 auto 48px;opacity:.8}
+.hero-ctas{display:flex;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:64px}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:14px 32px;border-radius:8px;font-size:1rem;font-weight:600;border:none;cursor:pointer;transition:all .3s ease}
+.btn-primary{background:var(--cyan);color:#0a0f1e}
+.btn-primary:hover{background:#38bdf8;transform:translateY(-2px);box-shadow:0 8px 30px rgba(14,165,233,.3);text-decoration:none}
+.btn-secondary{background:transparent;color:var(--cyan);border:1px solid var(--cyan)}
+.btn-secondary:hover{background:rgba(14,165,233,.1);transform:translateY(-2px);text-decoration:none}
+.hero-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;max-width:800px;margin:0 auto}
+.hero-stat{text-align:center}
+.hero-stat-value{font-size:clamp(1.5rem,4vw,2.2rem);font-weight:800;color:var(--cyan);font-variant-numeric:tabular-nums}
+.hero-stat-label{font-size:.85rem;color:var(--muted);margin-top:4px}
+
+/* Problem */
+.section-title{font-size:clamp(1.8rem,5vw,2.8rem);font-weight:800;text-align:center;margin-bottom:16px;color:#fff}
+.section-subtitle{text-align:center;color:var(--muted);max-width:600px;margin:0 auto 60px;font-size:1.1rem}
+.problem-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px}
+.problem-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:40px 32px;text-align:center;transition:all .4s ease}
+.problem-card:hover{transform:translateY(-8px);border-color:var(--cyan);box-shadow:0 20px 60px rgba(14,165,233,.1)}
+.problem-icon{width:64px;height:64px;margin:0 auto 24px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:28px;background:rgba(14,165,233,.1);color:var(--cyan)}
+.problem-card h3{font-size:1.3rem;margin-bottom:12px;color:#fff}
+.problem-card p{color:var(--muted);font-size:.95rem}
+
+/* How It Works */
+.steps{max-width:700px;margin:0 auto 60px;position:relative}
+.steps::before{content:'';position:absolute;left:24px;top:0;bottom:0;width:2px;background:var(--border)}
+.step{display:flex;gap:24px;margin-bottom:32px;position:relative}
+.step-num{width:48px;height:48px;min-width:48px;border-radius:50%;background:var(--card);border:2px solid var(--cyan);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--cyan);font-size:.9rem;z-index:1}
+.step-content h4{font-size:1.05rem;color:#fff;margin-bottom:4px}
+.step-content p{color:var(--muted);font-size:.9rem}
+.terminal{background:#0d1117;border:1px solid var(--border);border-radius:12px;overflow:hidden;max-width:800px;margin:0 auto}
+.terminal-bar{background:#161b22;padding:10px 16px;display:flex;align-items:center;gap:8px}
+.terminal-dot{width:12px;height:12px;border-radius:50%}
+.terminal-dot:nth-child(1){background:#ff5f57}
+.terminal-dot:nth-child(2){background:#febc2e}
+.terminal-dot:nth-child(3){background:#28c840}
+.terminal-title{color:var(--muted);font-size:.8rem;margin-left:12px;font-family:monospace}
+.terminal-body{padding:24px;font-family:'SF Mono',SFMono-Regular,Consolas,monospace;font-size:.82rem;line-height:1.7;overflow-x:auto}
+.terminal-body .key{color:#7ee787}
+.terminal-body .str{color:#a5d6ff}
+.terminal-body .num{color:#f5a623}
+.terminal-body .punct{color:var(--muted)}
+.terminal-body .comment{color:#6e7681}
+.terminal-body .label{color:var(--cyan);font-weight:700;display:block;margin-bottom:8px}
+.terminal-cursor{display:inline-block;width:8px;height:16px;background:var(--cyan);animation:pulse 1s infinite;vertical-align:middle}
+.json-section{margin-bottom:16px}
+
+/* Demo */
+.demo-section{background:linear-gradient(180deg,var(--bg) 0%,#0d1520 100%)}
+.demo-layout{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:start}
+.demo-form{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px}
+.form-group{margin-bottom:20px}
+.form-group label{display:block;font-size:.85rem;color:var(--muted);margin-bottom:6px;font-weight:500}
+.form-group input,.form-group select{width:100%;padding:12px 16px;background:#0a0f1e;border:1px solid var(--border);border-radius:8px;color:var(--text);font-size:.95rem;font-family:inherit;transition:border-color .3s}
+.form-group input:focus,.form-group select:focus{outline:none;border-color:var(--cyan)}
+.slider-wrapper{display:flex;align-items:center;gap:12px}
+.slider-wrapper input[type=range]{flex:1;-webkit-appearance:none;height:6px;border-radius:3px;background:var(--border);outline:none}
+.slider-wrapper input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:20px;height:20px;border-radius:50%;background:var(--cyan);cursor:pointer}
+.slider-value{font-weight:700;color:var(--cyan);min-width:36px;text-align:right}
+.demo-response{background:#0d1117;border:1px solid var(--border);border-radius:16px;overflow:hidden;min-height:400px}
+.demo-response-bar{background:#161b22;padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
+.demo-response-bar span{font-size:.8rem;color:var(--muted);font-family:monospace}
+.latency-badge{background:rgba(34,197,94,.15);color:var(--green);padding:4px 10px;border-radius:6px;font-size:.75rem;font-weight:600}
+.demo-response-body{padding:20px;font-family:'SF Mono',SFMono-Regular,Consolas,monospace;font-size:.78rem;line-height:1.7;overflow-x:auto;white-space:pre-wrap;max-height:500px;overflow-y:auto}
+.demo-response-body .key{color:#7ee787}
+.demo-response-body .str{color:#a5d6ff}
+.demo-response-body .num{color:#f5a623}
+.demo-response-body .bool{color:#f97583}
+.demo-response-body .null{color:#6e7681}
+.btn-demo{width:100%;padding:14px;font-size:1rem}
+.btn-loading{opacity:.7;pointer-events:none}
+
+/* Architecture */
+.arch-visual{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;margin-bottom:48px}
+.arch-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px 28px;text-align:center;min-width:160px;transition:all .3s}
+.arch-box:hover{border-color:var(--cyan)}
+.arch-box h4{font-size:1rem;color:#fff;margin-bottom:4px}
+.arch-box p{font-size:.8rem;color:var(--muted)}
+.arch-box.highlight{border-color:var(--cyan);box-shadow:0 0 30px rgba(14,165,233,.15)}
+.arch-arrow{color:var(--cyan);font-size:2rem;padding:0 16px;animation:pulse 2s infinite}
+.arch-text{text-align:center;color:var(--muted);font-size:1.05rem;margin-bottom:32px;max-width:600px;margin-left:auto;margin-right:auto}
+.integrations{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+.integration-tag{background:rgba(14,165,233,.1);color:var(--cyan);padding:8px 20px;border-radius:8px;font-size:.9rem;border:1px solid rgba(14,165,233,.2)}
+
+/* ROI */
+.roi-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:24px;margin-bottom:60px}
+.roi-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:32px 24px;text-align:center;transition:all .3s}
+.roi-card:hover{border-color:var(--green);box-shadow:0 12px 40px rgba(34,197,94,.08)}
+.roi-value{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:800;color:var(--green);margin-bottom:8px}
+.roi-label{font-size:.9rem;color:var(--muted)}
+.comparison-table{width:100%;border-collapse:collapse;max-width:900px;margin:0 auto}
+.comparison-table th,.comparison-table td{padding:16px 20px;text-align:left;border-bottom:1px solid var(--border)}
+.comparison-table th{color:var(--muted);font-size:.85rem;text-transform:uppercase;letter-spacing:.05em;font-weight:500}
+.comparison-table td:first-child{color:#fff;font-weight:600}
+.comparison-table td:nth-child(2){color:var(--muted)}
+.comparison-table td:nth-child(3){color:var(--green)}
+.comparison-table thead th{background:var(--card);position:sticky;top:0}
+.comparison-table tr:hover td{background:rgba(14,165,233,.03)}
+
+/* Pricing */
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;max-width:960px;margin:0 auto 40px}
+.pricing-card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:40px 32px;transition:all .3s}
+.pricing-card:hover{border-color:var(--cyan);transform:translateY(-4px)}
+.pricing-card.featured{border-color:var(--cyan);position:relative}
+.pricing-card.featured::before{content:'POPULAR';position:absolute;top:-12px;left:50%;transform:translateX(-50%);background:var(--cyan);color:#0a0f1e;padding:4px 16px;border-radius:6px;font-size:.7rem;font-weight:700;letter-spacing:.05em}
+.pricing-tier{font-size:.85rem;color:var(--cyan);text-transform:uppercase;letter-spacing:.1em;font-weight:600;margin-bottom:8px}
+.pricing-name{font-size:1.5rem;font-weight:700;color:#fff;margin-bottom:16px}
+.pricing-features{list-style:none;margin-bottom:32px}
+.pricing-features li{padding:8px 0;color:var(--muted);font-size:.9rem;display:flex;align-items:center;gap:8px}
+.pricing-features li::before{content:'\2713';color:var(--green);font-weight:700}
+
+/* Footer */
+footer{border-top:1px solid var(--border);padding:48px 0;text-align:center}
+footer .footer-logo{font-size:1.3rem;font-weight:700;color:#fff;margin-bottom:16px}
+footer .footer-logo span{color:var(--cyan)}
+.footer-links{display:flex;gap:32px;justify-content:center;margin-bottom:24px;flex-wrap:wrap}
+.footer-links a{color:var(--muted);font-size:.9rem}
+.footer-links a:hover{color:var(--cyan)}
+.footer-note{color:var(--muted);font-size:.8rem;opacity:.7}
+
+/* Churn score colors */
+.churn-high{color:var(--red)}
+.churn-med{color:var(--orange)}
+.churn-low{color:var(--green)}
+
+/* Mobile */
+@media(max-width:768px){
+  .hero-stats{grid-template-columns:repeat(2,1fr)}
+  .problem-grid,.roi-metrics{grid-template-columns:1fr}
+  .demo-layout{grid-template-columns:1fr}
+  .pricing-grid{grid-template-columns:1fr;max-width:400px}
+  .arch-visual{flex-direction:column}
+  .arch-arrow{transform:rotate(90deg);padding:8px 0}
+  section{padding:60px 0}
+  .comparison-table{font-size:.85rem}
+  .comparison-table th,.comparison-table td{padding:10px 12px}
+}
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero" id="hero">
+<div class="container">
+  <div class="hero-logo">Retain<span>IQ</span></div>
+  <p class="hero-tagline">Real-time VAS offer decisioning for telecom operators</p>
+  <p class="hero-sub">Ranked, margin-aware, compliant retention offers in under 200ms &mdash; integrated in hours, not months</p>
+  <div class="hero-ctas">
+    <a href="#demo" class="btn btn-primary">See Live Demo</a>
+    <a href="https://github.com" class="btn btn-secondary" target="_blank">View Documentation</a>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="hero-stat-value" data-target="200" data-prefix="< " data-suffix="ms">&nbsp;</div><div class="hero-stat-label">p99 latency</div></div>
+    <div class="hero-stat"><div class="hero-stat-value" data-target="34" data-suffix="%">&nbsp;</div><div class="hero-stat-label">attach rate</div></div>
+    <div class="hero-stat"><div class="hero-stat-value" data-target="4" data-suffix="h">&nbsp;</div><div class="hero-stat-label">integration</div></div>
+    <div class="hero-stat"><div class="hero-stat-value" data-target="24" data-suffix="mo">&nbsp;</div><div class="hero-stat-label">audit trail</div></div>
+  </div>
+</div>
+</section>
+
+<!-- Problem -->
+<section id="problem">
+<div class="container">
+  <h2 class="section-title reveal">The Retention Problem</h2>
+  <p class="section-subtitle reveal">Every lost subscriber costs 5-7x more to replace than to retain. Yet most operators still fight churn with blunt tools.</p>
+  <div class="problem-grid">
+    <div class="problem-card reveal reveal-delay-1">
+      <div class="problem-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+      <h3>Slow Offers</h3>
+      <p>Agents improvise or read static scripts. By the time they find the right offer, the customer has already decided to leave.</p>
+    </div>
+    <div class="problem-card reveal reveal-delay-2">
+      <div class="problem-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+      <h3>Margin Blind</h3>
+      <p>"Save at any cost" destroys profitability. Agents give away the highest-value offer to every subscriber regardless of risk.</p>
+    </div>
+    <div class="problem-card reveal reveal-delay-3">
+      <div class="problem-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6m0 8v6M4.93 4.93l4.24 4.24m5.66 5.66l4.24 4.24M2 12h6m8 0h6M4.93 19.07l4.24-4.24m5.66-5.66l4.24-4.24"/></svg></div>
+      <h3>Integration Tax</h3>
+      <p>Months of system integrator work for each new channel. By the time it's live, the business need has changed.</p>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- How It Works -->
+<section id="how-it-works">
+<div class="container">
+  <h2 class="section-title reveal">One API Call. Three Ranked Offers.</h2>
+  <p class="section-subtitle reveal">RetainIQ does the hard work in under 200ms so your agents and bots can focus on empathy.</p>
+  <div class="steps">
+    <div class="step reveal reveal-delay-1"><div class="step-num">1</div><div class="step-content"><h4>Channel sends subscriber_id + signals</h4><p>Works from any channel: agent desktop, chatbot, IVR, or app.</p></div></div>
+    <div class="step reveal reveal-delay-1"><div class="step-num">2</div><div class="step-content"><h4>Enriches from cache/BSS</h4><p>Subscriber profile, usage, tenure, billing &mdash; all in &lt; 20ms from warm cache.</p></div></div>
+    <div class="step reveal reveal-delay-2"><div class="step-num">3</div><div class="step-content"><h4>Churn model scores risk</h4><p>Gradient-boosted model trained on your data. Scores in &lt; 30ms.</p></div></div>
+    <div class="step reveal reveal-delay-2"><div class="step-num">4</div><div class="step-content"><h4>Catalog graph filters eligible offers</h4><p>Regulatory, plan compatibility, and cooldown rules applied automatically.</p></div></div>
+    <div class="step reveal reveal-delay-3"><div class="step-num">5</div><div class="step-content"><h4>Multi-objective ranker scores: retention &times; margin</h4><p>Pareto-optimal offers that maximize save rate without destroying margin.</p></div></div>
+    <div class="step reveal reveal-delay-3"><div class="step-num">6</div><div class="step-content"><h4>Response with script hints + deep links</h4><p>Agent sees talk track, customer sees personalized offer in-app.</p></div></div>
+  </div>
+
+  <div class="terminal reveal">
+    <div class="terminal-bar"><div class="terminal-dot"></div><div class="terminal-dot"></div><div class="terminal-dot"></div><span class="terminal-title">POST /v1/offers &mdash; 87ms</span></div>
+    <div class="terminal-body" id="terminal-json"></div>
+  </div>
+</div>
+</section>
+
+<!-- Demo -->
+<section class="demo-section" id="demo">
+<div class="container">
+  <h2 class="section-title reveal">Try It Now</h2>
+  <p class="section-subtitle reveal">This is a simulated API response &mdash; but the format is exactly what your systems will receive.</p>
+  <div class="demo-layout">
+    <div class="demo-form reveal">
+      <div class="form-group">
+        <label>Subscriber ID</label>
+        <input type="text" id="demo-sub" value="sub_12345">
+      </div>
+      <div class="form-group">
+        <label>Channel</label>
+        <select id="demo-channel"><option value="agentforce">Salesforce Agentforce</option><option value="genesys">Genesys Cloud</option><option value="app">Mobile App</option><option value="ivr">IVR</option></select>
+      </div>
+      <div class="form-group">
+        <label>Intent</label>
+        <select id="demo-intent"><option value="cancel">Cancel</option><option value="complaint">Complaint</option><option value="billing">Billing Dispute</option><option value="upgrade">Upgrade Inquiry</option></select>
+      </div>
+      <div class="form-group">
+        <label>Frustration Score</label>
+        <div class="slider-wrapper">
+          <input type="range" id="demo-frustration" min="0" max="100" value="70">
+          <span class="slider-value" id="frustration-val">0.70</span>
+        </div>
+      </div>
+      <button class="btn btn-primary btn-demo" id="demo-btn" onclick="runDemo()">Get Offers</button>
+    </div>
+    <div class="demo-response reveal reveal-delay-1">
+      <div class="demo-response-bar"><span>Response</span><span class="latency-badge" id="demo-latency">&mdash;</span></div>
+      <div class="demo-response-body" id="demo-output"><span style="color:var(--muted)">// Click "Get Offers" to see the response</span></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- Architecture -->
+<section id="architecture">
+<div class="container">
+  <h2 class="section-title reveal">Fits Your Existing Stack</h2>
+  <p class="arch-text reveal">RetainIQ doesn't replace your chatbot or BSS. It sits between them.</p>
+  <div class="arch-visual reveal">
+    <div class="arch-box">
+      <h4>Channels</h4>
+      <p>Agent Desktop, Bot,<br>IVR, App</p>
+    </div>
+    <div class="arch-arrow">&rarr;</div>
+    <div class="arch-box highlight">
+      <h4>Retain<span style="color:var(--cyan)">IQ</span></h4>
+      <p>Score, Rank,<br>Decide</p>
+    </div>
+    <div class="arch-arrow">&rarr;</div>
+    <div class="arch-box">
+      <h4>BSS / VAS</h4>
+      <p>Provision, Bill,<br>Activate</p>
+    </div>
+  </div>
+  <div class="integrations reveal">
+    <span class="integration-tag">Salesforce Agentforce</span>
+    <span class="integration-tag">Genesys Cloud</span>
+    <span class="integration-tag">Custom REST</span>
+    <span class="integration-tag">Webhooks</span>
+  </div>
+</div>
+</section>
+
+<!-- ROI -->
+<section id="roi">
+<div class="container">
+  <h2 class="section-title reveal">Proven ROI in 30 Days</h2>
+  <p class="section-subtitle reveal">Results from pilot deployments across MENA telecom operators.</p>
+  <div class="roi-metrics">
+    <div class="roi-card reveal reveal-delay-1"><div class="roi-value" data-target="34" data-prefix="+" data-suffix="%">+0%</div><div class="roi-label">Offer attach rate</div></div>
+    <div class="roi-card reveal reveal-delay-1"><div class="roi-value" data-target="18" data-prefix="+" data-suffix="%">+0%</div><div class="roi-label">Margin on retained accounts</div></div>
+    <div class="roi-card reveal reveal-delay-2"><div class="roi-value" data-target="4" data-suffix=" hours">0 hours</div><div class="roi-label">To first decision</div></div>
+    <div class="roi-card reveal reveal-delay-2"><div class="roi-value" data-target="100" data-suffix="%">0%</div><div class="roi-label">TDRA/NCA compliant</div></div>
+  </div>
+  <div class="reveal" style="overflow-x:auto">
+  <table class="comparison-table">
+    <thead><tr><th></th><th>Before</th><th>After RetainIQ</th></tr></thead>
+    <tbody>
+      <tr><td>Offer method</td><td>Static scripts</td><td>ML-ranked, margin-aware</td></tr>
+      <tr><td>Integration</td><td>3-6 months SI</td><td>&lt; 4 hours webhook</td></tr>
+      <tr><td>Compliance</td><td>Manual audit</td><td>Automated 24-month trail</td></tr>
+      <tr><td>Feedback loop</td><td>None</td><td>Accept/decline feeds model</td></tr>
+    </tbody>
+  </table>
+  </div>
+</div>
+</section>
+
+<!-- Pricing -->
+<section id="pricing">
+<div class="container">
+  <h2 class="section-title reveal">Simple, Volume-Based Pricing</h2>
+  <p class="section-subtitle reveal">No setup fees. No per-seat licenses. You pay for decisions.</p>
+  <div class="pricing-grid">
+    <div class="pricing-card reveal reveal-delay-1">
+      <div class="pricing-tier">Starter</div>
+      <div class="pricing-name">Pilot</div>
+      <ul class="pricing-features">
+        <li>Up to 10K decisions/mo</li>
+        <li>1 channel</li>
+        <li>Webhook integration</li>
+        <li>Email support</li>
+      </ul>
+      <a href="#" class="btn btn-secondary" style="width:100%;justify-content:center">Contact Sales</a>
+    </div>
+    <div class="pricing-card featured reveal reveal-delay-2">
+      <div class="pricing-tier">Growth</div>
+      <div class="pricing-name">Scale</div>
+      <ul class="pricing-features">
+        <li>Up to 100K decisions/mo</li>
+        <li>3 channels</li>
+        <li>Managed connectors</li>
+        <li>Dedicated Slack channel</li>
+      </ul>
+      <a href="#" class="btn btn-primary" style="width:100%;justify-content:center">Contact Sales</a>
+    </div>
+    <div class="pricing-card reveal reveal-delay-3">
+      <div class="pricing-tier">Enterprise</div>
+      <div class="pricing-name">Unlimited</div>
+      <ul class="pricing-features">
+        <li>Unlimited decisions</li>
+        <li>All channels</li>
+        <li>BYOK encryption</li>
+        <li>Dedicated support + SLA</li>
+      </ul>
+      <a href="#" class="btn btn-secondary" style="width:100%;justify-content:center">Contact Sales</a>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- Footer -->
+<footer>
+<div class="container">
+  <div class="footer-logo">Retain<span>IQ</span></div>
+  <div class="footer-links">
+    <a href="#">Documentation</a>
+    <a href="#">API Reference</a>
+    <a href="https://github.com" target="_blank">GitHub</a>
+    <a href="#">Contact</a>
+  </div>
+  <p class="footer-note">Built for MENA telecom operators. UAE/KSA data residency compliant.</p>
+</div>
+</footer>
+
+<script>
+// Intersection Observer for scroll reveals
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }});
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Counter animation
+function animateCounters() {
+  document.querySelectorAll('[data-target]').forEach(el => {
+    const io = new IntersectionObserver((entries) => {
+      if (!entries[0].isIntersecting) return;
+      io.unobserve(el);
+      const target = +el.dataset.target;
+      const prefix = el.dataset.prefix || '';
+      const suffix = el.dataset.suffix || '';
+      const duration = 1500;
+      const start = performance.now();
+      function tick(now) {
+        const p = Math.min((now - start) / duration, 1);
+        const ease = 1 - Math.pow(1 - p, 3);
+        el.textContent = prefix + Math.round(target * ease) + suffix;
+        if (p < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }, { threshold: 0.5 });
+    io.observe(el);
+  });
+}
+animateCounters();
+
+// Terminal JSON typing
+const terminalJson = `<span class="label">// Request</span><span class="punct">{</span>
+  <span class="key">"subscriber_id"</span><span class="punct">:</span> <span class="str">"sub_12345"</span><span class="punct">,</span>
+  <span class="key">"channel"</span><span class="punct">:</span> <span class="str">"agentforce"</span><span class="punct">,</span>
+  <span class="key">"intent"</span><span class="punct">:</span> <span class="str">"cancel"</span><span class="punct">,</span>
+  <span class="key">"frustration_score"</span><span class="punct">:</span> <span class="num">0.7</span>
+<span class="punct">}</span>
+
+<span class="label">// Response &mdash; 87ms</span><span class="punct">{</span>
+  <span class="key">"churn_score"</span><span class="punct">:</span> <span class="num">0.82</span><span class="punct">,</span>
+  <span class="key">"churn_band"</span><span class="punct">:</span> <span class="str">"high"</span><span class="punct">,</span>
+  <span class="key">"offers"</span><span class="punct">: [</span>
+    <span class="punct">{</span> <span class="key">"id"</span><span class="punct">:</span> <span class="str">"off_501"</span><span class="punct">,</span> <span class="key">"name"</span><span class="punct">:</span> <span class="str">"6-mo 30% discount"</span><span class="punct">,</span> <span class="key">"retention"</span><span class="punct">:</span> <span class="num">0.74</span><span class="punct">,</span> <span class="key">"margin"</span><span class="punct">:</span> <span class="num">0.41</span> <span class="punct">},</span>
+    <span class="punct">{</span> <span class="key">"id"</span><span class="punct">:</span> <span class="str">"off_220"</span><span class="punct">,</span> <span class="key">"name"</span><span class="punct">:</span> <span class="str">"Free roaming 90d"</span><span class="punct">,</span> <span class="key">"retention"</span><span class="punct">:</span> <span class="num">0.68</span><span class="punct">,</span> <span class="key">"margin"</span><span class="punct">:</span> <span class="num">0.55</span> <span class="punct">},</span>
+    <span class="punct">{</span> <span class="key">"id"</span><span class="punct">:</span> <span class="str">"off_899"</span><span class="punct">,</span> <span class="key">"name"</span><span class="punct">:</span> <span class="str">"Device upgrade credit"</span><span class="punct">,</span> <span class="key">"retention"</span><span class="punct">:</span> <span class="num">0.61</span><span class="punct">,</span> <span class="key">"margin"</span><span class="punct">:</span> <span class="num">0.63</span> <span class="punct">}</span>
+  <span class="punct">]</span>
+<span class="punct">}</span>`;
+
+const termEl = document.getElementById('terminal-json');
+const termIO = new IntersectionObserver((entries) => {
+  if (!entries[0].isIntersecting) return;
+  termIO.unobserve(termEl);
+  termEl.innerHTML = terminalJson;
+}, { threshold: 0.2 });
+termIO.observe(termEl);
+
+// Frustration slider
+const slider = document.getElementById('demo-frustration');
+const sliderVal = document.getElementById('frustration-val');
+slider.addEventListener('input', () => { sliderVal.textContent = (slider.value / 100).toFixed(2); });
+
+// Demo simulation
+const offerPool = [
+  { id: 'off_501', name: '6-mo 30% discount', retention: [0.70, 0.82], margin: [0.35, 0.45], script: 'I can offer you a 30% discount for the next 6 months on your current plan.' },
+  { id: 'off_220', name: 'Free roaming 90 days', retention: [0.60, 0.72], margin: [0.50, 0.60], script: 'How about free international roaming for the next 3 months?' },
+  { id: 'off_899', name: 'Device upgrade credit', retention: [0.55, 0.68], margin: [0.58, 0.68], script: 'We can offer you a device upgrade credit of AED 500 toward any new phone.' },
+  { id: 'off_310', name: 'Double data 3 months', retention: [0.62, 0.75], margin: [0.45, 0.55], script: 'Let me double your data allowance for the next 3 months at no extra cost.' },
+  { id: 'off_115', name: 'Loyalty bonus 500 pts', retention: [0.50, 0.62], margin: [0.65, 0.75], script: 'I\'m adding 500 bonus loyalty points to your account right now.' },
+  { id: 'off_780', name: 'Family plan add-on free', retention: [0.64, 0.78], margin: [0.40, 0.52], script: 'We can add a free family line to your plan for 6 months.' },
+];
+
+function rand(min, max) { return +(min + Math.random() * (max - min)).toFixed(2); }
+
+function runDemo() {
+  const btn = document.getElementById('demo-btn');
+  const output = document.getElementById('demo-output');
+  const latencyEl = document.getElementById('demo-latency');
+  btn.classList.add('btn-loading');
+  btn.textContent = 'Scoring...';
+  output.innerHTML = '<span style="color:var(--muted)">Processing request...</span>';
+  latencyEl.textContent = '...';
+
+  const subId = document.getElementById('demo-sub').value || 'sub_12345';
+  const channel = document.getElementById('demo-channel').value;
+  const intent = document.getElementById('demo-intent').value;
+  const frustration = slider.value / 100;
+
+  setTimeout(() => {
+    const churn = Math.min(0.98, Math.max(0.15, frustration * 0.6 + (intent === 'cancel' ? 0.25 : intent === 'complaint' ? 0.15 : 0.05) + (Math.random() * 0.1 - 0.05)));
+    const churnBand = churn > 0.7 ? 'high' : churn > 0.4 ? 'medium' : 'low';
+    const churnClass = churn > 0.7 ? 'churn-high' : churn > 0.4 ? 'churn-med' : 'churn-low';
+
+    // Pick 3 random offers
+    const shuffled = [...offerPool].sort(() => Math.random() - 0.5);
+    const picked = shuffled.slice(0, 3).map((o, i) => ({
+      ...o,
+      retention: rand(o.retention[0], o.retention[1]),
+      margin: rand(o.margin[0], o.margin[1]),
+      rank: i + 1
+    })).sort((a, b) => (b.retention * 0.6 + b.margin * 0.4) - (a.retention * 0.6 + a.margin * 0.4));
+
+    const latency = Math.floor(60 + Math.random() * 80);
+    latencyEl.textContent = latency + 'ms';
+
+    const offersJson = picked.map((o, i) => {
+      return `    <span class="punct">{</span>
+      <span class="key">"rank"</span><span class="punct">:</span> <span class="num">${i + 1}</span><span class="punct">,</span>
+      <span class="key">"offer_id"</span><span class="punct">:</span> <span class="str">"${o.id}"</span><span class="punct">,</span>
+      <span class="key">"name"</span><span class="punct">:</span> <span class="str">"${o.name}"</span><span class="punct">,</span>
+      <span class="key">"predicted_retention"</span><span class="punct">:</span> <span class="num">${o.retention}</span><span class="punct">,</span>
+      <span class="key">"margin_score"</span><span class="punct">:</span> <span class="num">${o.margin}</span><span class="punct">,</span>
+      <span class="key">"script_hint"</span><span class="punct">:</span> <span class="str">"${o.script}"</span>
+    <span class="punct">}</span>`;
+    }).join('<span class="punct">,</span>\n');
+
+    output.innerHTML = `<span class="punct">{</span>
+  <span class="key">"request_id"</span><span class="punct">:</span> <span class="str">"req_${Date.now().toString(36)}"</span><span class="punct">,</span>
+  <span class="key">"subscriber_id"</span><span class="punct">:</span> <span class="str">"${subId}"</span><span class="punct">,</span>
+  <span class="key">"churn_score"</span><span class="punct">:</span> <span class="num ${churnClass}">${churn.toFixed(2)}</span><span class="punct">,</span>
+  <span class="key">"churn_band"</span><span class="punct">:</span> <span class="str ${churnClass}">"${churnBand}"</span><span class="punct">,</span>
+  <span class="key">"offers"</span><span class="punct">:</span> <span class="punct">[</span>
+${offersJson}
+  <span class="punct">],</span>
+  <span class="key">"latency_ms"</span><span class="punct">:</span> <span class="num">${latency}</span><span class="punct">,</span>
+  <span class="key">"model_version"</span><span class="punct">:</span> <span class="str">"v2.4.1"</span><span class="punct">,</span>
+  <span class="key">"compliant"</span><span class="punct">:</span> <span class="bool">true</span>
+<span class="punct">}</span>`;
+
+    btn.classList.remove('btn-loading');
+    btn.textContent = 'Get Offers';
+  }, 600 + Math.random() * 400);
+}
+</script>
+</body>
+</html>

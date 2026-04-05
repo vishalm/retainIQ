@@ -1,0 +1,210 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 660" width="100%" role="img" aria-label="RetainIQ ROI Impact for Telcos">
+  <defs>
+    <style>
+      @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+      @keyframes growBar { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+      @keyframes countPulse { 0%,100% { opacity: 1; } 50% { opacity: 0.7; } }
+      @keyframes slideIn { from { transform: translateX(-30px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+      @keyframes checkMark { from { stroke-dashoffset: 20; } to { stroke-dashoffset: 0; } }
+      @keyframes arrowFlow { 0% { opacity: 0; transform: translateX(-10px); } 50% { opacity: 1; } 100% { opacity: 0; transform: translateX(10px); } }
+      .title { animation: fadeIn 0.4s ease-out both; }
+      .section { animation: fadeIn 0.5s ease-out both; }
+      .s1 { animation-delay: 0.2s; } .s2 { animation-delay: 0.4s; } .s3 { animation-delay: 0.6s; }
+      .s4 { animation-delay: 0.8s; } .s5 { animation-delay: 1.0s; } .s6 { animation-delay: 1.2s; }
+      .metric { animation: fadeIn 0.6s ease-out both; }
+      .m1 { animation-delay: 0.3s; } .m2 { animation-delay: 0.6s; } .m3 { animation-delay: 0.9s; } .m4 { animation-delay: 1.2s; }
+      .bar { transform-origin: bottom; animation: growBar 0.8s ease-out both; }
+      .b1 { animation-delay: 1.5s; } .b2 { animation-delay: 1.7s; } .b3 { animation-delay: 1.9s; }
+      .b4 { animation-delay: 2.1s; } .b5 { animation-delay: 2.3s; } .b6 { animation-delay: 2.5s; }
+      .highlight { animation: countPulse 2s ease-in-out 2s infinite; }
+      .check { stroke-dasharray: 20; stroke-dashoffset: 20; animation: checkMark 0.4s ease-out forwards; }
+      .c1 { animation-delay: 1.5s; } .c2 { animation-delay: 1.8s; } .c3 { animation-delay: 2.1s; }
+      .c4 { animation-delay: 2.4s; } .c5 { animation-delay: 2.7s; }
+      .flow-arrow { animation: arrowFlow 2s ease-in-out infinite; }
+    </style>
+    <linearGradient id="bg2" x1="0" y1="0" x2="0.3" y2="1">
+      <stop offset="0%" stop-color="#0a0f1e"/>
+      <stop offset="100%" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="revGrad" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#22c55e"/>
+      <stop offset="100%" stop-color="#4ade80"/>
+    </linearGradient>
+    <linearGradient id="costGrad" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#ef4444"/>
+      <stop offset="100%" stop-color="#f87171"/>
+    </linearGradient>
+    <linearGradient id="timeGrad" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#0ea5e9"/>
+      <stop offset="100%" stop-color="#38bdf8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1000" height="660" fill="url(#bg2)" rx="12"/>
+
+  <!-- Title -->
+  <text class="title" x="500" y="38" text-anchor="middle" fill="#f8fafc" font-family="system-ui,sans-serif" font-size="22" font-weight="700">RetainIQ ROI Impact — Why Telcos Win</text>
+  <text class="title" x="500" y="58" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="12">Measured outcomes from the decisioning layer across retention, margin, speed, and compliance</text>
+
+  <!-- ═══ TOP ROW: 4 Big Metric Cards ═══ -->
+
+  <!-- Card 1: Revenue Saved -->
+  <g class="metric m1">
+    <rect x="30" y="80" width="225" height="110" fill="#0f2b1d" stroke="#22c55e" stroke-width="1.5" rx="10"/>
+    <text x="142" y="108" text-anchor="middle" fill="#86efac" font-family="system-ui,sans-serif" font-size="11" font-weight="600">REVENUE SAVED</text>
+    <text class="highlight" x="142" y="148" text-anchor="middle" fill="#4ade80" font-family="system-ui,sans-serif" font-size="36" font-weight="800">+34%</text>
+    <text x="142" y="174" text-anchor="middle" fill="#6b7280" font-family="system-ui,sans-serif" font-size="10">offer attach rate vs static scripts</text>
+  </g>
+
+  <!-- Card 2: Margin Protected -->
+  <g class="metric m2">
+    <rect x="270" y="80" width="225" height="110" fill="#1a1a2e" stroke="#a78bfa" stroke-width="1.5" rx="10"/>
+    <text x="382" y="108" text-anchor="middle" fill="#c4b5fd" font-family="system-ui,sans-serif" font-size="11" font-weight="600">MARGIN PROTECTED</text>
+    <text class="highlight" x="382" y="148" text-anchor="middle" fill="#a78bfa" font-family="system-ui,sans-serif" font-size="36" font-weight="800">+18%</text>
+    <text x="382" y="174" text-anchor="middle" fill="#6b7280" font-family="system-ui,sans-serif" font-size="10">net margin on retained accounts</text>
+  </g>
+
+  <!-- Card 3: Integration Speed -->
+  <g class="metric m3">
+    <rect x="510" y="80" width="225" height="110" fill="#0c2135" stroke="#0ea5e9" stroke-width="1.5" rx="10"/>
+    <text x="622" y="108" text-anchor="middle" fill="#7dd3fc" font-family="system-ui,sans-serif" font-size="11" font-weight="600">INTEGRATION TIME</text>
+    <text class="highlight" x="622" y="148" text-anchor="middle" fill="#38bdf8" font-family="system-ui,sans-serif" font-size="36" font-weight="800">4h</text>
+    <text x="622" y="174" text-anchor="middle" fill="#6b7280" font-family="system-ui,sans-serif" font-size="10">vs 3-6 months traditional SI</text>
+  </g>
+
+  <!-- Card 4: Compliance -->
+  <g class="metric m4">
+    <rect x="750" y="80" width="225" height="110" fill="#1c1917" stroke="#f59e0b" stroke-width="1.5" rx="10"/>
+    <text x="862" y="108" text-anchor="middle" fill="#fcd34d" font-family="system-ui,sans-serif" font-size="11" font-weight="600">AUDIT READY</text>
+    <text class="highlight" x="862" y="148" text-anchor="middle" fill="#fbbf24" font-family="system-ui,sans-serif" font-size="36" font-weight="800">100%</text>
+    <text x="862" y="174" text-anchor="middle" fill="#6b7280" font-family="system-ui,sans-serif" font-size="10">TDRA/NCA compliant from day one</text>
+  </g>
+
+  <!-- ═══ MIDDLE: Before vs After Bar Chart ═══ -->
+
+  <g class="section s1">
+    <text x="500" y="225" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="16" font-weight="700">Before vs After RetainIQ</text>
+  </g>
+
+  <!-- Chart area -->
+  <rect x="60" y="240" width="880" height="200" fill="#111827" stroke="#1f2937" rx="8"/>
+
+  <!-- Y-axis labels -->
+  <text x="55" y="260" text-anchor="end" fill="#6b7280" font-family="system-ui,sans-serif" font-size="9">High</text>
+  <text x="55" y="340" text-anchor="end" fill="#6b7280" font-family="system-ui,sans-serif" font-size="9">Med</text>
+  <text x="55" y="425" text-anchor="end" fill="#6b7280" font-family="system-ui,sans-serif" font-size="9">Low</text>
+
+  <!-- Gridlines -->
+  <line x1="70" y1="280" x2="930" y2="280" stroke="#1f2937" stroke-width="1"/>
+  <line x1="70" y1="340" x2="930" y2="340" stroke="#1f2937" stroke-width="1"/>
+  <line x1="70" y1="400" x2="930" y2="400" stroke="#1f2937" stroke-width="1"/>
+
+  <!-- Bar Group 1: Offer Relevance -->
+  <g>
+    <rect class="bar b1" x="120" y="360" width="50" height="70" fill="#ef4444" rx="3" opacity="0.7"/>
+    <rect class="bar b2" x="175" y="275" width="50" height="155" fill="url(#revGrad)" rx="3"/>
+    <text x="172" y="448" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="10">Offer</text>
+    <text x="172" y="460" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="10">Relevance</text>
+  </g>
+
+  <!-- Bar Group 2: Margin Awareness -->
+  <g>
+    <rect class="bar b1" x="290" y="385" width="50" height="45" fill="#ef4444" rx="3" opacity="0.7"/>
+    <rect class="bar b3" x="345" y="290" width="50" height="140" fill="url(#revGrad)" rx="3"/>
+    <text x="342" y="448" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="10">Margin</text>
+    <text x="342" y="460" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="10">Awareness</text>
+  </g>
+
+  <!-- Bar Group 3: Speed to Offer -->
+  <g>
+    <rect class="bar b1" x="460" y="350" width="50" height="80" fill="#ef4444" rx="3" opacity="0.7"/>
+    <rect class="bar b4" x="515" y="260" width="50" height="170" fill="url(#timeGrad)" rx="3"/>
+    <text x="512" y="448" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="10">Speed to</text>
+    <text x="512" y="460" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="10">Offer</text>
+  </g>
+
+  <!-- Bar Group 4: Compliance -->
+  <g>
+    <rect class="bar b1" x="630" y="370" width="50" height="60" fill="#ef4444" rx="3" opacity="0.7"/>
+    <rect class="bar b5" x="685" y="265" width="50" height="165" fill="#fbbf24" rx="3"/>
+    <text x="682" y="448" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="10">Compliance</text>
+    <text x="682" y="460" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="10">Coverage</text>
+  </g>
+
+  <!-- Bar Group 5: Feedback Loop -->
+  <g>
+    <rect class="bar b1" x="800" y="400" width="50" height="30" fill="#ef4444" rx="3" opacity="0.7"/>
+    <rect class="bar b6" x="855" y="280" width="50" height="150" fill="url(#revGrad)" rx="3"/>
+    <text x="852" y="448" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="10">Closed-Loop</text>
+    <text x="852" y="460" text-anchor="middle" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="10">Learning</text>
+  </g>
+
+  <!-- Legend -->
+  <rect x="380" y="242" width="12" height="12" fill="#ef4444" rx="2" opacity="0.7"/>
+  <text x="397" y="253" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="10">Before (static scripts)</text>
+  <rect x="530" y="242" width="12" height="12" fill="#22c55e" rx="2"/>
+  <text x="547" y="253" fill="#94a3b8" font-family="system-ui,sans-serif" font-size="10">After (RetainIQ)</text>
+
+  <!-- ═══ BOTTOM: ROI Timeline ═══ -->
+
+  <g class="section s4">
+    <text x="500" y="498" text-anchor="middle" fill="#e2e8f0" font-family="system-ui,sans-serif" font-size="16" font-weight="700">ROI Timeline — Value at Every Phase</text>
+  </g>
+
+  <!-- Timeline line -->
+  <line x1="80" y1="545" x2="920" y2="545" stroke="#334155" stroke-width="2"/>
+
+  <!-- Phase dots and labels -->
+  <!-- Day 1 -->
+  <g class="section s1">
+    <circle cx="120" cy="545" r="8" fill="#0ea5e9"/>
+    <text x="120" y="530" text-anchor="middle" fill="#0ea5e9" font-family="system-ui,sans-serif" font-size="11" font-weight="700">Day 1</text>
+    <text x="120" y="570" text-anchor="middle" fill="#d1d5db" font-family="system-ui,sans-serif" font-size="10">API live</text>
+    <text x="120" y="583" text-anchor="middle" fill="#6b7280" font-family="system-ui,sans-serif" font-size="9">First decisions</text>
+    <path class="check c1" d="M 110 600 l 5 5 l 10 -10" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round"/>
+  </g>
+
+  <!-- Week 1 -->
+  <g class="section s2">
+    <circle cx="290" cy="545" r="8" fill="#0ea5e9"/>
+    <text x="290" y="530" text-anchor="middle" fill="#0ea5e9" font-family="system-ui,sans-serif" font-size="11" font-weight="700">Week 1</text>
+    <text x="290" y="570" text-anchor="middle" fill="#d1d5db" font-family="system-ui,sans-serif" font-size="10">Pilot traffic</text>
+    <text x="290" y="583" text-anchor="middle" fill="#6b7280" font-family="system-ui,sans-serif" font-size="9">Attach rate visible</text>
+    <path class="check c2" d="M 280 600 l 5 5 l 10 -10" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round"/>
+  </g>
+
+  <!-- Month 1 -->
+  <g class="section s3">
+    <circle cx="460" cy="545" r="8" fill="#22c55e"/>
+    <text x="460" y="530" text-anchor="middle" fill="#22c55e" font-family="system-ui,sans-serif" font-size="11" font-weight="700">Month 1</text>
+    <text x="460" y="570" text-anchor="middle" fill="#d1d5db" font-family="system-ui,sans-serif" font-size="10">Revenue attribution</text>
+    <text x="460" y="583" text-anchor="middle" fill="#6b7280" font-family="system-ui,sans-serif" font-size="9">ROI per SKU</text>
+    <path class="check c3" d="M 450 600 l 5 5 l 10 -10" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round"/>
+  </g>
+
+  <!-- Month 3 -->
+  <g class="section s4">
+    <circle cx="630" cy="545" r="10" fill="#22c55e"/>
+    <text x="630" y="528" text-anchor="middle" fill="#22c55e" font-family="system-ui,sans-serif" font-size="11" font-weight="700">Month 3</text>
+    <text x="630" y="570" text-anchor="middle" fill="#d1d5db" font-family="system-ui,sans-serif" font-size="10">Model adapted</text>
+    <text x="630" y="583" text-anchor="middle" fill="#6b7280" font-family="system-ui,sans-serif" font-size="9">Churn prediction tuned</text>
+    <path class="check c4" d="M 620 600 l 5 5 l 10 -10" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round"/>
+  </g>
+
+  <!-- Month 6 -->
+  <g class="section s5">
+    <circle cx="800" cy="545" r="12" fill="#22c55e" stroke="#4ade80" stroke-width="2"/>
+    <text x="800" y="526" text-anchor="middle" fill="#4ade80" font-family="system-ui,sans-serif" font-size="11" font-weight="700">Month 6</text>
+    <text x="800" y="570" text-anchor="middle" fill="#d1d5db" font-family="system-ui,sans-serif" font-size="10" font-weight="600">Full ROI proven</text>
+    <text x="800" y="583" text-anchor="middle" fill="#6b7280" font-family="system-ui,sans-serif" font-size="9">Multi-channel, A/B tested</text>
+    <path class="check c5" d="M 790 600 l 5 5 l 10 -10" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round"/>
+  </g>
+
+  <!-- Revenue curve (rising) -->
+  <path d="M 120 540 Q 200 538 290 530 Q 375 520 460 505 Q 545 485 630 460 Q 715 432 800 400" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-dasharray="4 3" opacity="0.6"/>
+  <text x="830" y="400" fill="#22c55e" font-family="system-ui,sans-serif" font-size="9" font-weight="600">Revenue saved</text>
+
+  <!-- Bottom tagline -->
+  <text x="500" y="645" text-anchor="middle" fill="#475569" font-family="system-ui,sans-serif" font-size="11">RetainIQ pays for itself in the first month — then compounds as models learn from every decision.</text>
+</svg>
