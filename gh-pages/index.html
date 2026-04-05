@@ -268,6 +268,28 @@ nav .container { display: flex; align-items: center; justify-content: space-betw
 .comparison td:nth-child(2) { color: var(--text-muted); }
 .comparison td:nth-child(3) { color: var(--green); font-weight: 500; }
 
+/* ── Infographics ── */
+.infographic { max-width: 820px; margin: 0 auto; }
+.infographic svg { width: 100%; height: auto; }
+.infographic svg text { font-family: system-ui, -apple-system, sans-serif; }
+.journey-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 48px; }
+.journey-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 28px 24px; text-align: center; position: relative; }
+.journey-card::before { content: ''; position: absolute; top: -1px; left: 24px; right: 24px; height: 3px; border-radius: 0 0 3px 3px; }
+.journey-card:nth-child(1)::before { background: var(--red); }
+.journey-card:nth-child(2)::before { background: var(--cyan); }
+.journey-card:nth-child(3)::before { background: var(--green); }
+.journey-num { font-size: 2.5rem; font-weight: 800; line-height: 1; margin-bottom: 8px; }
+.journey-card:nth-child(1) .journey-num { color: var(--red); }
+.journey-card:nth-child(2) .journey-num { color: var(--cyan); }
+.journey-card:nth-child(3) .journey-num { color: var(--green); }
+.journey-phase { font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 8px; }
+.journey-card h3 { font-size: 1.1rem; margin-bottom: 8px; }
+.journey-card p { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.6; }
+.journey-metric { margin-top: 16px; padding: 8px 12px; background: var(--code-bg); border-radius: 8px; font-family: var(--mono); font-size: 0.8rem; font-weight: 600; }
+.journey-card:nth-child(1) .journey-metric { color: var(--red); }
+.journey-card:nth-child(2) .journey-metric { color: var(--cyan); }
+.journey-card:nth-child(3) .journey-metric { color: var(--green); }
+
 /* ── Tech Corner ── */
 .tech-tabs { display: flex; gap: 4px; margin-bottom: 32px; border-bottom: 1px solid var(--border); }
 .tech-tab { padding: 12px 20px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: all 0.3s; font-family: var(--font); }
@@ -341,6 +363,7 @@ footer .container { display: flex; align-items: center; justify-content: space-b
   .bench-grid { grid-template-columns: repeat(2, 1fr); }
   .ai-grid { grid-template-columns: 1fr; }
   .obs-features { grid-template-columns: 1fr; }
+  .journey-grid { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -403,6 +426,106 @@ footer .container { display: flex; align-items: center; justify-content: space-b
       <div class="hero-metric"><div class="metric-value green" data-count="34" data-suffix="%">0</div><div class="metric-label">More Saves</div></div>
       <div class="hero-metric"><div class="metric-value cyan" data-count="18" data-suffix="%">0</div><div class="metric-label">Margin Protected</div></div>
       <div class="hero-metric"><div class="metric-value green" data-count="30" data-suffix=" days">0</div><div class="metric-label">To Proven ROI</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ 360 PLATFORM ═══ -->
+<section class="alt-bg">
+  <div class="container">
+    <div class="section-header">
+      <p class="eyebrow reveal">The Complete Picture</p>
+      <h2 class="reveal rd1">One platform. Six capabilities.<br>Every retention moment covered.</h2>
+    </div>
+    <div class="infographic reveal">
+      <svg viewBox="0 0 800 520" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <style>
+            @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+            @keyframes fadePulse { 0%,100% { opacity: 0.7; } 50% { opacity: 1; } }
+            .wheel-line { stroke: var(--border); stroke-width: 1; fill: none; }
+            .wheel-dot { animation: fadePulse 3s ease-in-out infinite; }
+            .cap-box { rx: 12; ry: 12; fill: var(--card); stroke: var(--border); stroke-width: 1.5; transition: all 0.3s; }
+            .cap-box:hover { stroke: var(--cyan); filter: drop-shadow(0 2px 8px rgba(8,145,178,0.15)); }
+            .cap-title { font-size: 13px; font-weight: 700; fill: var(--heading); }
+            .cap-desc { font-size: 10px; fill: var(--text-muted); }
+            .cap-icon { font-size: 11px; font-weight: 700; }
+            .center-ring { fill: none; stroke: var(--border); stroke-width: 1; stroke-dasharray: 4 4; }
+          </style>
+        </defs>
+
+        <!-- Center hub -->
+        <circle cx="400" cy="260" r="60" fill="var(--cyan)" opacity="0.1"/>
+        <circle cx="400" cy="260" r="60" fill="none" stroke="var(--cyan)" stroke-width="2"/>
+        <circle class="center-ring" cx="400" cy="260" r="90"/>
+        <circle class="center-ring" cx="400" cy="260" r="120" stroke-dasharray="2 6"/>
+        <text x="400" y="252" text-anchor="middle" font-size="20" font-weight="800" fill="var(--heading)">RetainIQ</text>
+        <text x="400" y="272" text-anchor="middle" font-size="10" fill="var(--cyan)" font-weight="600">360 PLATFORM</text>
+
+        <!-- Connector lines -->
+        <line x1="400" y1="200" x2="400" y2="100" class="wheel-line"/>
+        <line x1="452" y1="220" x2="600" y2="100" class="wheel-line"/>
+        <line x1="452" y1="300" x2="600" y2="420" class="wheel-line"/>
+        <line x1="400" y1="320" x2="400" y2="420" class="wheel-line"/>
+        <line x1="348" y1="300" x2="200" y2="420" class="wheel-line"/>
+        <line x1="348" y1="220" x2="200" y2="100" class="wheel-line"/>
+
+        <!-- Animated dots on lines -->
+        <circle cx="400" cy="150" r="3" fill="var(--cyan)" class="wheel-dot"/>
+        <circle cx="530" cy="155" r="3" fill="var(--blue)" class="wheel-dot" style="animation-delay:0.5s"/>
+        <circle cx="530" cy="365" r="3" fill="var(--green)" class="wheel-dot" style="animation-delay:1s"/>
+        <circle cx="400" cy="370" r="3" fill="var(--purple)" class="wheel-dot" style="animation-delay:1.5s"/>
+        <circle cx="270" cy="365" r="3" fill="var(--orange)" class="wheel-dot" style="animation-delay:2s"/>
+        <circle cx="270" cy="155" r="3" fill="var(--red)" class="wheel-dot" style="animation-delay:2.5s"/>
+
+        <!-- Capability 1: Churn Prediction (top) -->
+        <rect x="300" y="28" width="200" height="70" class="cap-box"/>
+        <circle cx="325" cy="52" r="12" fill="rgba(8,145,178,0.1)"/>
+        <text x="325" y="56" text-anchor="middle" class="cap-icon" fill="var(--cyan)">ML</text>
+        <text x="345" y="52" class="cap-title" text-anchor="start">Churn Prediction</text>
+        <text x="345" y="68" class="cap-desc" text-anchor="start">LightGBM scoring in &lt;30ms</text>
+        <text x="345" y="82" class="cap-desc" text-anchor="start">5 feature groups, SHAP explainability</text>
+
+        <!-- Capability 2: Offer Ranking (top-right) -->
+        <rect x="570" y="48" width="210" height="70" class="cap-box"/>
+        <circle cx="595" cy="72" r="12" fill="rgba(37,99,235,0.1)"/>
+        <text x="595" y="76" text-anchor="middle" class="cap-icon" fill="var(--blue)">fx</text>
+        <text x="615" y="72" class="cap-title" text-anchor="start">Offer Ranking</text>
+        <text x="615" y="88" class="cap-desc" text-anchor="start">Multi-objective: retention × margin</text>
+        <text x="615" y="102" class="cap-desc" text-anchor="start">Configurable weights per tenant</text>
+
+        <!-- Capability 3: Compliance (bottom-right) -->
+        <rect x="570" y="388" width="210" height="70" class="cap-box"/>
+        <circle cx="595" cy="412" r="12" fill="rgba(5,150,105,0.1)"/>
+        <text x="595" y="416" text-anchor="middle" class="cap-icon" fill="var(--green)">§</text>
+        <text x="615" y="412" class="cap-title" text-anchor="start">Compliance Engine</text>
+        <text x="615" y="428" class="cap-desc" text-anchor="start">TDRA/NCA rules, Arabic disclosures</text>
+        <text x="615" y="442" class="cap-desc" text-anchor="start">Hot-deploy JSON DSL, 24mo audit</text>
+
+        <!-- Capability 4: Analytics (bottom) -->
+        <rect x="300" y="422" width="200" height="70" class="cap-box"/>
+        <circle cx="325" cy="446" r="12" fill="rgba(124,58,237,0.1)"/>
+        <text x="325" y="450" text-anchor="middle" class="cap-icon" fill="var(--purple)">A/B</text>
+        <text x="345" y="446" class="cap-title" text-anchor="start">Analytics &amp; A/B</text>
+        <text x="345" y="462" class="cap-desc" text-anchor="start">Revenue attribution per SKU</text>
+        <text x="345" y="476" class="cap-desc" text-anchor="start">Experiment framework with MDE</text>
+
+        <!-- Capability 5: Catalog Graph (bottom-left) -->
+        <rect x="20" y="388" width="210" height="70" class="cap-box"/>
+        <circle cx="45" cy="412" r="12" fill="rgba(217,119,6,0.1)"/>
+        <text x="45" y="416" text-anchor="middle" class="cap-icon" fill="var(--orange)">G</text>
+        <text x="65" y="412" class="cap-title" text-anchor="start">VAS Catalog Graph</text>
+        <text x="65" y="428" class="cap-desc" text-anchor="start">Bundles, upgrades, incompatibility</text>
+        <text x="65" y="442" class="cap-desc" text-anchor="start">Webhook sync &lt;15min freshness</text>
+
+        <!-- Capability 6: Integrations (top-left) -->
+        <rect x="20" y="48" width="210" height="70" class="cap-box"/>
+        <circle cx="45" cy="72" r="12" fill="rgba(220,38,38,0.1)"/>
+        <text x="45" y="76" text-anchor="middle" class="cap-icon" fill="var(--red)">API</text>
+        <text x="65" y="72" class="cap-title" text-anchor="start">Channel Connectors</text>
+        <text x="65" y="88" class="cap-desc" text-anchor="start">Agentforce, Genesys, REST, SDK</text>
+        <text x="65" y="102" class="cap-desc" text-anchor="start">4 tiers: 1 hour to 1 day</text>
+      </svg>
     </div>
   </div>
 </section>
@@ -629,6 +752,76 @@ footer .container { display: flex; align-items: center; justify-content: space-b
           <tr><td>New offer launch</td><td>Weeks of CRM config</td><td>Add to catalog → live in 15 minutes</td></tr>
         </tbody>
       </table>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ DECISION JOURNEY ═══ -->
+<section>
+  <div class="container">
+    <div class="section-header">
+      <p class="eyebrow reveal">The Retention Journey</p>
+      <h2 class="reveal rd1">Before, during, and after<br>the subscriber conversation.</h2>
+      <p class="subtitle reveal rd2">RetainIQ isn't just the moment of decision. It's the intelligence loop that starts before the call and improves after every outcome.</p>
+    </div>
+
+    <!-- Journey Timeline SVG -->
+    <div class="infographic reveal" style="margin-bottom:16px">
+      <svg viewBox="0 0 800 80" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <style>
+            @keyframes flowRight2 { 0%{transform:translateX(0);opacity:0} 30%{opacity:1} 70%{opacity:1} 100%{transform:translateX(700px);opacity:0} }
+            .timeline-track { stroke: var(--border); stroke-width: 3; fill: none; }
+          </style>
+          <linearGradient id="tg" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="var(--red)"/>
+            <stop offset="50%" stop-color="var(--cyan)"/>
+            <stop offset="100%" stop-color="var(--green)"/>
+          </linearGradient>
+        </defs>
+        <line x1="50" y1="40" x2="750" y2="40" class="timeline-track"/>
+        <line x1="50" y1="40" x2="750" y2="40" stroke="url(#tg)" stroke-width="3" opacity="0.4"/>
+        <!-- Phase markers -->
+        <circle cx="133" cy="40" r="8" fill="var(--red)"/>
+        <text x="133" y="20" text-anchor="middle" font-size="10" font-weight="700" fill="var(--red)">BEFORE</text>
+        <circle cx="400" cy="40" r="10" fill="var(--cyan)" stroke="var(--bg)" stroke-width="3"/>
+        <text x="400" y="18" text-anchor="middle" font-size="10" font-weight="700" fill="var(--cyan)">DURING</text>
+        <circle cx="667" cy="40" r="8" fill="var(--green)"/>
+        <text x="667" y="20" text-anchor="middle" font-size="10" font-weight="700" fill="var(--green)">AFTER</text>
+        <!-- Flow dot -->
+        <circle r="4" fill="var(--cyan)" opacity="0.8">
+          <animateMotion dur="4s" repeatCount="indefinite" path="M 50,40 L 750,40"/>
+          <animate attributeName="opacity" values="0;1;1;0" dur="4s" repeatCount="indefinite"/>
+        </circle>
+        <!-- Arrows -->
+        <text x="70" y="65" font-size="9" fill="var(--text-muted)">Usage signals</text>
+        <text x="330" y="65" font-size="9" fill="var(--text-muted)">POST /v1/decide</text>
+        <text x="600" y="65" font-size="9" fill="var(--text-muted)">POST /v1/outcome</text>
+      </svg>
+    </div>
+
+    <div class="journey-grid reveal">
+      <div class="journey-card">
+        <div class="journey-phase">Before Contact</div>
+        <div class="journey-num">72h</div>
+        <h3>Predict Before They Call</h3>
+        <p>Usage signals flow into Kafka. When churn risk crosses the threshold, RetainIQ can trigger proactive outreach — before the subscriber even picks up the phone.</p>
+        <div class="journey-metric">Risk threshold → outbound offer push</div>
+      </div>
+      <div class="journey-card">
+        <div class="journey-phase">During Conversation</div>
+        <div class="journey-num">&lt;200ms</div>
+        <h3>Decide in Real Time</h3>
+        <p>The agent's screen lights up with ranked offers, each with a script hint, margin impact, and compliance status. No guessing. No improvising. Every conversation is optimized.</p>
+        <div class="journey-metric">3 ranked offers + script hints + deep links</div>
+      </div>
+      <div class="journey-card">
+        <div class="journey-phase">After Decision</div>
+        <div class="journey-num">∞</div>
+        <h3>Learn From Every Outcome</h3>
+        <p>Accept or decline? Revenue impact? The outcome feeds back into the model. Every decision makes the next one smarter. ROI compounds month over month.</p>
+        <div class="journey-metric">AUC improves measurably over 30-day windows</div>
+      </div>
     </div>
   </div>
 </section>
