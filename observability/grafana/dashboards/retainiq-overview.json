@@ -22,7 +22,7 @@
         "name": "tenant",
         "type": "query",
         "datasource": { "type": "prometheus", "uid": "prometheus" },
-        "query": "label_values(retainiq_decide_duration_seconds_count, tenant)",
+        "query": "label_values(retainiq_decide_total, tenant)",
         "refresh": 2,
         "includeAll": true,
         "allValue": ".*",
@@ -63,7 +63,7 @@
       },
       "targets": [
         {
-          "expr": "sum(rate(retainiq_decide_duration_seconds_count{tenant=~\"$tenant\"}[1m]))",
+          "expr": "sum(rate(retainiq_decide_total{tenant=~\"$tenant\"}[1m]))",
           "legendFormat": "req/s"
         }
       ]
@@ -97,7 +97,7 @@
       },
       "targets": [
         {
-          "expr": "histogram_quantile(0.99, sum(rate(retainiq_decide_duration_seconds_bucket{tenant=~\"$tenant\"}[2m])) by (le)) * 1000",
+          "expr": "histogram_quantile(0.99, sum(rate(retainiq_decide_latency_ms_bucket{tenant=~\"$tenant\"}[2m])) by (le)) * 1000",
           "legendFormat": "p99"
         }
       ]
@@ -245,19 +245,19 @@
       },
       "targets": [
         {
-          "expr": "histogram_quantile(0.50, sum(rate(retainiq_decide_duration_seconds_bucket{tenant=~\"$tenant\"}[2m])) by (le)) * 1000",
+          "expr": "histogram_quantile(0.50, sum(rate(retainiq_decide_latency_ms_bucket{tenant=~\"$tenant\"}[2m])) by (le)) * 1000",
           "legendFormat": "p50"
         },
         {
-          "expr": "histogram_quantile(0.90, sum(rate(retainiq_decide_duration_seconds_bucket{tenant=~\"$tenant\"}[2m])) by (le)) * 1000",
+          "expr": "histogram_quantile(0.90, sum(rate(retainiq_decide_latency_ms_bucket{tenant=~\"$tenant\"}[2m])) by (le)) * 1000",
           "legendFormat": "p90"
         },
         {
-          "expr": "histogram_quantile(0.95, sum(rate(retainiq_decide_duration_seconds_bucket{tenant=~\"$tenant\"}[2m])) by (le)) * 1000",
+          "expr": "histogram_quantile(0.95, sum(rate(retainiq_decide_latency_ms_bucket{tenant=~\"$tenant\"}[2m])) by (le)) * 1000",
           "legendFormat": "p95"
         },
         {
-          "expr": "histogram_quantile(0.99, sum(rate(retainiq_decide_duration_seconds_bucket{tenant=~\"$tenant\"}[2m])) by (le)) * 1000",
+          "expr": "histogram_quantile(0.99, sum(rate(retainiq_decide_latency_ms_bucket{tenant=~\"$tenant\"}[2m])) by (le)) * 1000",
           "legendFormat": "p99"
         },
         {
@@ -290,23 +290,23 @@
       },
       "targets": [
         {
-          "expr": "histogram_quantile(0.99, sum(rate(retainiq_stage_duration_seconds_bucket{stage=\"enrich\", tenant=~\"$tenant\"}[2m])) by (le)) * 1000",
+          "expr": "histogram_quantile(0.99, sum(rate(retainiq_pipeline_enrich_duration_seconds_bucket{tenant=~\"$tenant\"}[2m])) by (le)) * 1000",
           "legendFormat": "enrich"
         },
         {
-          "expr": "histogram_quantile(0.99, sum(rate(retainiq_stage_duration_seconds_bucket{stage=\"score\", tenant=~\"$tenant\"}[2m])) by (le)) * 1000",
+          "expr": "histogram_quantile(0.99, sum(rate(retainiq_pipeline_score_duration_seconds_bucket{tenant=~\"$tenant\"}[2m])) by (le)) * 1000",
           "legendFormat": "score"
         },
         {
-          "expr": "histogram_quantile(0.99, sum(rate(retainiq_stage_duration_seconds_bucket{stage=\"candidacy\", tenant=~\"$tenant\"}[2m])) by (le)) * 1000",
+          "expr": "histogram_quantile(0.99, sum(rate(retainiq_pipeline_candidacy_duration_seconds_bucket{tenant=~\"$tenant\"}[2m])) by (le)) * 1000",
           "legendFormat": "candidacy"
         },
         {
-          "expr": "histogram_quantile(0.99, sum(rate(retainiq_stage_duration_seconds_bucket{stage=\"rank\", tenant=~\"$tenant\"}[2m])) by (le)) * 1000",
+          "expr": "histogram_quantile(0.99, sum(rate(retainiq_pipeline_rank_duration_seconds_bucket{tenant=~\"$tenant\"}[2m])) by (le)) * 1000",
           "legendFormat": "rank"
         },
         {
-          "expr": "histogram_quantile(0.99, sum(rate(retainiq_stage_duration_seconds_bucket{stage=\"assemble\", tenant=~\"$tenant\"}[2m])) by (le)) * 1000",
+          "expr": "histogram_quantile(0.99, sum(rate(retainiq_pipeline_assemble_duration_seconds_bucket{tenant=~\"$tenant\"}[2m])) by (le)) * 1000",
           "legendFormat": "assemble"
         }
       ]
@@ -424,7 +424,7 @@
       },
       "targets": [
         {
-          "expr": "sum(rate(retainiq_outcome_total{outcome=\"accepted\", tenant=~\"$tenant\"}[1h])) / sum(rate(retainiq_decide_total{has_offers=\"true\", tenant=~\"$tenant\"}[1h]))",
+          "expr": "sum(rate(retainiq_outcome_total{result=\"accepted\", tenant=~\"$tenant\"}[1h])) / sum(rate(retainiq_decide_total{tenant=~\"$tenant\"}[1h]))",
           "legendFormat": "attach rate"
         }
       ]
@@ -451,7 +451,7 @@
       ],
       "targets": [
         {
-          "expr": "topk(20, sum by (sku) (increase(retainiq_offer_total{tenant=~\"$tenant\"}[1h])))",
+          "expr": "topk(20, sum by (sku) (increase(retainiq_outcome_total{tenant=~\"$tenant\"}[1h])))",
           "legendFormat": "{{sku}}",
           "format": "table",
           "instant": true
@@ -675,7 +675,7 @@
       },
       "targets": [
         {
-          "expr": "sum(increase(retainiq_decide_duration_seconds_bucket{tenant=~\"$tenant\"}[1m])) by (le)",
+          "expr": "sum(increase(retainiq_decide_latency_ms_bucket{tenant=~\"$tenant\"}[1m])) by (le)",
           "legendFormat": "{{le}}",
           "format": "heatmap"
         }

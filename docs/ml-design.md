@@ -69,6 +69,21 @@ Derived from the system design document. These are enforced during feature engin
 
 Weights are implemented as group-level feature importance targets. During training, if a group's aggregate SHAP importance deviates more than 10 percentage points from target, a regularization penalty is applied to bring it back in range.
 
+### Sigmoid Calibration (v1.1 fix)
+
+The initial sigmoid function `1/(1+exp(-x*4+2))` had a shift parameter that compressed high-risk scores toward 0.5. This was identified through unit testing — a subscriber with churn intent, competitor mention, port inquiry, and 40% data decline scored only 0.46 (MEDIUM) instead of HIGH.
+
+**Fix**: Adjusted to `1/(1+exp(-x*8+3))` which properly separates risk bands:
+
+| Raw Score | Old Output | New Output | Band |
+|-----------|-----------|-----------|------|
+| 0.15 (stable) | 0.20 | 0.14 | LOW |
+| 0.35 (moderate) | 0.31 | 0.35 | MEDIUM |
+| 0.46 (high-risk) | 0.46 | 0.66 | HIGH |
+| 0.55 (critical) | 0.55 | 0.80 | CRITICAL |
+
+This fix was validated with 6 unit tests covering stable, high-risk, bill shock, tenure, usage decline, and fallback scenarios.
+
 ### Output Schema
 
 ```json

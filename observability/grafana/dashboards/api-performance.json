@@ -1,0 +1,676 @@
+{
+  "id": null,
+  "uid": "retainiq-api-perf",
+  "title": "RetainIQ — API Performance",
+  "description": "Real-time API performance monitoring for operations teams",
+  "tags": ["retainiq", "api", "performance"],
+  "timezone": "browser",
+  "editable": true,
+  "graphTooltip": 1,
+  "version": 38,
+  "schemaVersion": 39,
+  "refresh": "5s",
+  "time": {
+    "from": "now-15m",
+    "to": "now"
+  },
+  "fiscalYearStartMonth": 0,
+  "liveNow": true,
+  "style": "dark",
+  "templating": {
+    "list": [
+      {
+        "name": "tenant",
+        "type": "query",
+        "label": "Tenant",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "definition": "label_values(retainiq_decide_total, tenant)",
+        "query": { "query": "label_values(retainiq_decide_total, tenant)", "refId": "tenant" },
+        "refresh": 2,
+        "includeAll": true,
+        "allValue": ".*",
+        "multi": true,
+        "current": { "selected": true, "text": ["All"], "value": ["$__all"] },
+        "sort": 1
+      }
+    ]
+  },
+  "annotations": { "list": [] },
+  "links": [],
+  "panels": [
+    {
+      "type": "row",
+      "id": 100,
+      "title": "Live SLO Status",
+      "collapsed": false,
+      "gridPos": { "x": 0, "y": 0, "w": 24, "h": 1 },
+      "panels": []
+    },
+    {
+      "id": 1,
+      "title": "Current RPS",
+      "type": "stat",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "x": 0, "y": 1, "w": 6, "h": 4 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(http_server_requests_seconds_count{uri=~\"/v1/.*\"}[1m]))",
+          "legendFormat": "RPS",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "green" }
+            ]
+          },
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 2,
+      "title": "P99 Latency",
+      "type": "gauge",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "x": 6, "y": 1, "w": 6, "h": 4 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.99, sum(rate(retainiq_decide_latency_ms_bucket{tenant=~\"$tenant\"}[2m])) by (le))",
+          "legendFormat": "P99",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "green" },
+              { "value": 150, "color": "yellow" },
+              { "value": 200, "color": "red" }
+            ]
+          },
+          "unit": "ms",
+          "min": 0,
+          "max": 500
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "showThresholdLabels": false,
+        "showThresholdMarkers": true
+      }
+    },
+    {
+      "id": 3,
+      "title": "Error Rate %",
+      "type": "stat",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "x": 12, "y": 1, "w": 6, "h": 4 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(http_server_requests_seconds_count{status=~\"5..\"}[1m])) / sum(rate(http_server_requests_seconds_count[1m])) * 100",
+          "legendFormat": "Error Rate",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "green" },
+              { "value": 1, "color": "yellow" },
+              { "value": 5, "color": "red" }
+            ]
+          },
+          "unit": "percent",
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "textMode": "auto"
+      }
+    },
+    {
+      "id": 4,
+      "title": "Success Rate %",
+      "type": "stat",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "x": 18, "y": 1, "w": 6, "h": 4 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "100 - (sum(rate(http_server_requests_seconds_count{status=~\"5..\"}[1m])) / sum(rate(http_server_requests_seconds_count[1m])) * 100)",
+          "legendFormat": "Success Rate",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "red" },
+              { "value": 95, "color": "yellow" },
+              { "value": 99, "color": "green" }
+            ]
+          },
+          "unit": "percent",
+          "decimals": 2
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "textMode": "auto"
+      }
+    },
+    {
+      "type": "row",
+      "id": 101,
+      "title": "Latency Analysis",
+      "collapsed": false,
+      "gridPos": { "x": 0, "y": 5, "w": 24, "h": 1 },
+      "panels": []
+    },
+    {
+      "id": 5,
+      "title": "Request Latency Percentiles",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "x": 0, "y": 6, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "histogram_quantile(0.50, sum(rate(retainiq_decide_latency_ms_bucket{tenant=~\"$tenant\"}[2m])) by (le))",
+          "legendFormat": "p50"
+        },
+        {
+          "refId": "B",
+          "expr": "histogram_quantile(0.90, sum(rate(retainiq_decide_latency_ms_bucket{tenant=~\"$tenant\"}[2m])) by (le))",
+          "legendFormat": "p90"
+        },
+        {
+          "refId": "C",
+          "expr": "histogram_quantile(0.95, sum(rate(retainiq_decide_latency_ms_bucket{tenant=~\"$tenant\"}[2m])) by (le))",
+          "legendFormat": "p95"
+        },
+        {
+          "refId": "D",
+          "expr": "histogram_quantile(0.99, sum(rate(retainiq_decide_latency_ms_bucket{tenant=~\"$tenant\"}[2m])) by (le))",
+          "legendFormat": "p99"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "scheme",
+            "showPoints": "never",
+            "spanNulls": true,
+            "axisCenteredZero": false,
+            "axisColorMode": "text"
+          },
+          "unit": "ms"
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": { "mode": "multi", "sort": "desc" },
+        "legend": { "displayMode": "list", "placement": "bottom", "calcs": ["lastNotNull", "mean"] }
+      }
+    },
+    {
+      "id": 6,
+      "title": "Pipeline Stage Breakdown",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "x": 12, "y": 6, "w": 12, "h": 8 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "rate(sum(retainiq_pipeline_enrich_duration_seconds_sum{tenant=~\"$tenant\"}) [1m]) / rate(sum(retainiq_pipeline_enrich_duration_seconds_count{tenant=~\"$tenant\"}) [1m])",
+          "legendFormat": "enrich"
+        },
+        {
+          "refId": "B",
+          "expr": "rate(sum(retainiq_pipeline_score_duration_seconds_sum{tenant=~\"$tenant\"}) [1m]) / rate(sum(retainiq_pipeline_score_duration_seconds_count{tenant=~\"$tenant\"}) [1m])",
+          "legendFormat": "score"
+        },
+        {
+          "refId": "C",
+          "expr": "rate(sum(retainiq_pipeline_candidacy_duration_seconds_sum{tenant=~\"$tenant\"}) [1m]) / rate(sum(retainiq_pipeline_candidacy_duration_seconds_count{tenant=~\"$tenant\"}) [1m])",
+          "legendFormat": "candidacy"
+        },
+        {
+          "refId": "D",
+          "expr": "rate(sum(retainiq_pipeline_rank_duration_seconds_sum{tenant=~\"$tenant\"}) [1m]) / rate(sum(retainiq_pipeline_rank_duration_seconds_count{tenant=~\"$tenant\"}) [1m])",
+          "legendFormat": "rank"
+        },
+        {
+          "refId": "E",
+          "expr": "rate(sum(retainiq_pipeline_assemble_duration_seconds_sum{tenant=~\"$tenant\"}) [1m]) / rate(sum(retainiq_pipeline_assemble_duration_seconds_count{tenant=~\"$tenant\"}) [1m])",
+          "legendFormat": "assemble"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 1,
+            "fillOpacity": 30,
+            "gradientMode": "opacity",
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": { "mode": "normal", "group": "A" },
+            "axisCenteredZero": false,
+            "axisColorMode": "text"
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": { "mode": "multi", "sort": "desc" },
+        "legend": { "displayMode": "list", "placement": "bottom", "calcs": ["lastNotNull"] }
+      }
+    },
+    {
+      "type": "row",
+      "id": 102,
+      "title": "Traffic Patterns",
+      "collapsed": false,
+      "gridPos": { "x": 0, "y": 14, "w": 24, "h": 1 },
+      "panels": []
+    },
+    {
+      "id": 7,
+      "title": "RPS by Endpoint",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "x": 0, "y": 15, "w": 10, "h": 8 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(http_server_requests_seconds_count[1m])) by (uri)",
+          "legendFormat": "{{uri}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "scheme",
+            "showPoints": "never",
+            "spanNulls": true,
+            "axisCenteredZero": false,
+            "axisColorMode": "text"
+          },
+          "unit": "reqps"
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": { "mode": "multi", "sort": "desc" },
+        "legend": { "displayMode": "table", "placement": "right", "calcs": ["lastNotNull", "mean"] }
+      }
+    },
+    {
+      "id": 8,
+      "title": "Decisions by Channel",
+      "type": "piechart",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "x": 10, "y": 15, "w": 7, "h": 8 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(increase(retainiq_decide_total{tenant=~\"$tenant\"}[5m])) by (channel)",
+          "legendFormat": "{{channel}}",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "pieType": "donut",
+        "tooltip": { "mode": "single" },
+        "legend": { "displayMode": "list", "placement": "right", "values": ["value", "percent"] }
+      }
+    },
+    {
+      "id": 9,
+      "title": "Decisions by Churn Band",
+      "type": "bargauge",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "x": 17, "y": 15, "w": 7, "h": 8 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(increase(retainiq_decide_total{tenant=~\"$tenant\"}[5m])) by (churn_band)",
+          "legendFormat": "{{churn_band}}",
+          "instant": true
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "blue" },
+              { "value": 100, "color": "green" },
+              { "value": 500, "color": "yellow" },
+              { "value": 1000, "color": "red" }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "minVizWidth": 0,
+        "minVizHeight": 10
+      }
+    },
+    {
+      "type": "row",
+      "id": 103,
+      "title": "Cache Performance",
+      "collapsed": false,
+      "gridPos": { "x": 0, "y": 23, "w": 24, "h": 1 },
+      "panels": []
+    },
+    {
+      "id": 10,
+      "title": "Cache Hit Rate by Entity",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "x": 0, "y": 24, "w": 14, "h": 8 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(retainiq_cache_hit_total{tenant=~\"$tenant\"}[1m])) by (entity) / (sum(rate(retainiq_cache_hit_total{tenant=~\"$tenant\"}[1m])) by (entity) + sum(rate(retainiq_cache_miss_total{tenant=~\"$tenant\"}[1m])) by (entity)) * 100",
+          "legendFormat": "{{entity}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 10,
+            "gradientMode": "scheme",
+            "showPoints": "never",
+            "spanNulls": true,
+            "axisCenteredZero": false,
+            "axisColorMode": "text"
+          },
+          "unit": "percent",
+          "min": 0,
+          "max": 100
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": { "mode": "multi", "sort": "desc" },
+        "legend": { "displayMode": "list", "placement": "bottom", "calcs": ["lastNotNull", "mean"] }
+      }
+    },
+    {
+      "id": 11,
+      "title": "L1 vs L2 Hit Ratio",
+      "type": "stat",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "x": 14, "y": 24, "w": 10, "h": 8 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(rate(retainiq_cache_hit_total{entity=\"subscriber_l1\", tenant=~\"$tenant\"}[1m])) / (sum(rate(retainiq_cache_hit_total{entity=\"subscriber_l1\", tenant=~\"$tenant\"}[1m])) + sum(rate(retainiq_cache_miss_total{entity=\"subscriber_l1\", tenant=~\"$tenant\"}[1m]))) * 100",
+          "legendFormat": "Subscriber L1"
+        },
+        {
+          "refId": "B",
+          "expr": "sum(rate(retainiq_cache_hit_total{entity=\"subscriber\", tenant=~\"$tenant\"}[1m])) / (sum(rate(retainiq_cache_hit_total{entity=\"subscriber\", tenant=~\"$tenant\"}[1m])) + sum(rate(retainiq_cache_miss_total{entity=\"subscriber\", tenant=~\"$tenant\"}[1m]))) * 100",
+          "legendFormat": "Subscriber L2"
+        },
+        {
+          "refId": "C",
+          "expr": "sum(rate(retainiq_cache_hit_total{entity=\"catalog_l1\", tenant=~\"$tenant\"}[1m])) / (sum(rate(retainiq_cache_hit_total{entity=\"catalog_l1\", tenant=~\"$tenant\"}[1m])) + sum(rate(retainiq_cache_miss_total{entity=\"catalog_l1\", tenant=~\"$tenant\"}[1m]))) * 100",
+          "legendFormat": "Catalog L1"
+        },
+        {
+          "refId": "D",
+          "expr": "sum(rate(retainiq_cache_hit_total{entity=\"catalog\", tenant=~\"$tenant\"}[1m])) / (sum(rate(retainiq_cache_hit_total{entity=\"catalog\", tenant=~\"$tenant\"}[1m])) + sum(rate(retainiq_cache_miss_total{entity=\"catalog\", tenant=~\"$tenant\"}[1m]))) * 100",
+          "legendFormat": "Catalog L2"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "value": null, "color": "red" },
+              { "value": 50, "color": "yellow" },
+              { "value": 80, "color": "green" }
+            ]
+          },
+          "unit": "percent",
+          "decimals": 1
+        },
+        "overrides": []
+      },
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "textMode": "auto",
+        "wideLayout": true
+      }
+    },
+    {
+      "type": "row",
+      "id": 104,
+      "title": "JVM & System",
+      "collapsed": false,
+      "gridPos": { "x": 0, "y": 32, "w": 24, "h": 1 },
+      "panels": []
+    },
+    {
+      "id": 12,
+      "title": "CPU Usage",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "x": 0, "y": 33, "w": 6, "h": 6 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "process_cpu_usage",
+          "legendFormat": "CPU"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "fixedColor": "orange", "mode": "fixed" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 20,
+            "gradientMode": "scheme",
+            "showPoints": "never",
+            "spanNulls": true,
+            "axisCenteredZero": false,
+            "axisColorMode": "text"
+          },
+          "unit": "percentunit",
+          "min": 0,
+          "max": 1
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": { "mode": "single" },
+        "legend": { "displayMode": "hidden" }
+      }
+    },
+    {
+      "id": 13,
+      "title": "Heap Memory",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "x": 6, "y": 33, "w": 6, "h": 6 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "sum(jvm_memory_used_bytes{area=\"heap\"}) by (id)",
+          "legendFormat": "{{id}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "palette-classic" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 20,
+            "gradientMode": "scheme",
+            "showPoints": "never",
+            "spanNulls": true,
+            "stacking": { "mode": "normal", "group": "A" },
+            "axisCenteredZero": false,
+            "axisColorMode": "text"
+          },
+          "unit": "bytes"
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": { "mode": "multi", "sort": "desc" },
+        "legend": { "displayMode": "list", "placement": "bottom" }
+      }
+    },
+    {
+      "id": 14,
+      "title": "GC Pauses",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "x": 12, "y": 33, "w": 6, "h": 6 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "rate(jvm_gc_pause_seconds_sum[1m])",
+          "legendFormat": "GC pause time/s"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "fixedColor": "red", "mode": "fixed" },
+          "custom": {
+            "drawStyle": "bars",
+            "lineWidth": 1,
+            "fillOpacity": 50,
+            "gradientMode": "scheme",
+            "showPoints": "never",
+            "spanNulls": true,
+            "axisCenteredZero": false,
+            "axisColorMode": "text"
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": { "mode": "single" },
+        "legend": { "displayMode": "hidden" }
+      }
+    },
+    {
+      "id": 15,
+      "title": "Active Threads",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "x": 18, "y": 33, "w": 6, "h": 6 },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "jvm_threads_live_threads",
+          "legendFormat": "Live threads"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "color": { "fixedColor": "purple", "mode": "fixed" },
+          "custom": {
+            "drawStyle": "line",
+            "lineInterpolation": "smooth",
+            "lineWidth": 2,
+            "fillOpacity": 15,
+            "gradientMode": "scheme",
+            "showPoints": "never",
+            "spanNulls": true,
+            "axisCenteredZero": false,
+            "axisColorMode": "text"
+          },
+          "unit": "short"
+        },
+        "overrides": []
+      },
+      "options": {
+        "tooltip": { "mode": "single" },
+        "legend": { "displayMode": "hidden" }
+      }
+    }
+  ]
+}

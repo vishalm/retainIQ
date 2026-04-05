@@ -108,6 +108,21 @@ Connectors use **OAuth 2.0 client credentials** and **automatic field mapping**;
 | Churn model | Model is in-process; cannot "miss" | If model load fails on startup, pod fails readiness check |
 | Eligibility rules | Fetch from PostgreSQL with 200ms timeout; cache-aside | First request slower; rules rarely change so miss rate is negligible |
 
+### 3.5 Two-Tier Caching (L1 + L2)
+
+The decision pipeline uses a two-tier cache to minimize latency:
+
+| Tier | Store | TTL | Purpose |
+|------|-------|-----|---------|
+| L1 | In-process ConcurrentHashMap | 30-60s | Eliminates Redis round-trip for hot data |
+| L2 | Redis cluster | 1-15 min | Shared cache across pods, survives restarts |
+
+- **Catalog**: L1 (60s) → L2 Redis (15 min) → default catalog
+- **Subscriber profiles**: L1 (30s) → L2 Redis (5 min) → BSS fetch
+- **L1 hit rate under load**: >80% for repeated subscriber lookups within a session
+
+On catalog sync (`POST /v1/catalog/sync`), both L1 and L2 are invalidated.
+
 ## 4. Logical component architecture
 
 Hexagonal (ports-and-adapters): **domain core** is pure; I/O via swappable adapters.
@@ -209,6 +224,9 @@ Declarative JSON DSL, **hot-deployed** without service restart.
 | Redis hit rate | Redis metrics | &lt; 85% |
 | Model drift | Custom | AUC drop &gt; 5% vs baseline |
 | Throughput | Prometheus | &lt; 80% of expected RPS |
+| Pipeline stage timers | Micrometer | Each stage individually timed |
+| L1/L2 cache hit rates | Micrometer | Per-entity, per-tenant |
+| Churn score distribution | Micrometer | Histogram with band labels |
 
 ## 10. Graceful degradation
 

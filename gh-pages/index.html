@@ -268,6 +268,37 @@ nav .container { display: flex; align-items: center; justify-content: space-betw
 .comparison td:nth-child(2) { color: var(--text-muted); }
 .comparison td:nth-child(3) { color: var(--green); font-weight: 500; }
 
+/* ── Tech Corner ── */
+.tech-tabs { display: flex; gap: 4px; margin-bottom: 32px; border-bottom: 1px solid var(--border); }
+.tech-tab { padding: 12px 20px; font-size: 0.85rem; font-weight: 600; color: var(--text-muted); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; transition: all 0.3s; font-family: var(--font); }
+.tech-tab:hover { color: var(--text); }
+.tech-tab.active { color: var(--cyan); border-bottom-color: var(--cyan); }
+.tech-panel { display: none; }
+.tech-panel.active { display: block; }
+.bench-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 16px; margin-bottom: 32px; }
+.bench-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 20px 16px; text-align: center; }
+.bench-val { font-size: 1.8rem; font-weight: 800; font-family: var(--mono); letter-spacing: -0.02em; }
+.bench-lbl { font-size: 0.72rem; color: var(--text-muted); margin-top: 4px; }
+.bench-sub { font-size: 0.68rem; color: var(--text-muted); opacity: 0.7; }
+.code-block { background: var(--code-bg); border: 1px solid var(--border); border-radius: 12px; padding: 24px; font-family: var(--mono); font-size: 0.78rem; line-height: 1.8; overflow-x: auto; color: var(--text-secondary); margin-bottom: 24px; }
+.code-block .comment { color: var(--text-muted); }
+.ai-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.ai-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 28px; position: relative; overflow: hidden; }
+.ai-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; }
+.ai-card.ml::before { background: linear-gradient(90deg, var(--cyan), var(--blue)); }
+.ai-card.classical::before { background: linear-gradient(90deg, var(--green), var(--orange)); }
+.ai-badge { display: inline-block; padding: 3px 10px; border-radius: 6px; font-size: 0.7rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px; }
+.ai-badge.ml-badge { background: rgba(8,145,178,0.1); color: var(--cyan); border: 1px solid rgba(8,145,178,0.2); }
+.ai-badge.algo-badge { background: rgba(5,150,105,0.1); color: var(--green); border: 1px solid rgba(5,150,105,0.2); }
+.ai-card h3 { margin-bottom: 8px; }
+.ai-card p { font-size: 0.88rem; color: var(--text-secondary); line-height: 1.6; }
+.formula-box { background: var(--code-bg); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; margin-top: 12px; font-family: var(--mono); font-size: 0.82rem; color: var(--cyan); }
+.obs-features { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.obs-feature { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px 20px; }
+.obs-feature h3 { font-size: 1rem; margin-bottom: 6px; }
+.obs-feature p { font-size: 0.82rem; color: var(--text-secondary); }
+.obs-feature .obs-tool { font-size: 0.72rem; color: var(--text-muted); margin-top: 8px; font-family: var(--mono); }
+
 /* ── CTA ── */
 .cta-section { text-align: center; }
 .cta-section::before { content: ''; position: absolute; inset: 0; background: var(--hero-gradient); }
@@ -307,6 +338,9 @@ footer .container { display: flex; align-items: center; justify-content: space-b
   .burger { display: flex; }
   .comparison { overflow-x: auto; }
   .nav-cta { display: none; }
+  .bench-grid { grid-template-columns: repeat(2, 1fr); }
+  .ai-grid { grid-template-columns: 1fr; }
+  .obs-features { grid-template-columns: 1fr; }
 }
 </style>
 </head>
@@ -325,6 +359,7 @@ footer .container { display: flex; align-items: center; justify-content: space-b
         <a href="#solution">How It Works</a>
         <a href="#demo">Demo</a>
         <a href="#roi">ROI</a>
+      <a href="#tech">Technical</a>
       </div>
       <button class="burger" id="burger" onclick="toggleMenu()" aria-label="Menu">
         <span></span><span></span><span></span>
@@ -343,6 +378,7 @@ footer .container { display: flex; align-items: center; justify-content: space-b
   <a href="#solution" onclick="closeMenu()">How It Works</a>
   <a href="#demo" onclick="closeMenu()">Demo</a>
   <a href="#roi" onclick="closeMenu()">ROI</a>
+  <a href="#tech" onclick="closeMenu()">Technical</a>
   <a href="https://github.com/vishalm/retainIQ">GitHub</a>
 </div>
 
@@ -642,6 +678,159 @@ footer .container { display: flex; align-items: center; justify-content: space-b
   </div>
 </section>
 
+<!-- ═══ TECHNICAL CORNER ═══ -->
+<section id="tech">
+  <div class="container">
+    <div class="section-header">
+      <p class="eyebrow reveal">Technical Corner</p>
+      <h2 class="reveal rd1">Built for engineers<br>who read the fine print.</h2>
+      <p class="subtitle reveal rd2">Performance benchmarks, AI/ML architecture, observability stack, and the ranking formula — all verified with real load tests.</p>
+    </div>
+
+    <div class="tech-tabs reveal" role="tablist">
+      <button class="tech-tab active" onclick="showTab('perf')" role="tab">Performance</button>
+      <button class="tech-tab" onclick="showTab('ai')" role="tab">AI &amp; ML</button>
+      <button class="tech-tab" onclick="showTab('obs')" role="tab">Observability</button>
+      <button class="tech-tab" onclick="showTab('stack')" role="tab">Tech Stack</button>
+    </div>
+
+    <!-- Performance Tab -->
+    <div class="tech-panel active" id="tab-perf">
+      <h3 style="margin-bottom:20px">Load Test Results — k6, 50 concurrent VUs, 30 seconds</h3>
+      <div class="bench-grid">
+        <div class="bench-card"><div class="bench-val" style="color:var(--green)">6ms</div><div class="bench-lbl">Avg (sequential)</div><div class="bench-sub">Hot path, all caches warm</div></div>
+        <div class="bench-card"><div class="bench-val" style="color:var(--cyan)">87ms</div><div class="bench-lbl">Avg (50 VUs)</div><div class="bench-sub">First run, single container</div></div>
+        <div class="bench-card"><div class="bench-val" style="color:var(--cyan)">164ms</div><div class="bench-lbl">P99 (first run)</div><div class="bench-sub">Includes cold cache</div></div>
+        <div class="bench-card"><div class="bench-val" style="color:var(--green)">0.00%</div><div class="bench-lbl">Error Rate</div><div class="bench-sub">Zero errors at any load</div></div>
+        <div class="bench-card"><div class="bench-val" style="color:var(--cyan)">512</div><div class="bench-lbl">Requests/sec</div><div class="bench-sub">Single container peak</div></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div>
+          <h3 style="margin-bottom:12px">Pipeline Latency Budget</h3>
+          <div class="code-block">
+<span class="comment">// 5-stage pipeline — total &lt; 200ms p99</span>
+Stage 1: Enrich     │ &lt; 20ms │ L1 cache → Redis → BSS
+Stage 2: Score      │ &lt; 30ms │ LightGBM in-process
+Stage 3: Eligibility│ &lt; 40ms │ Catalog graph + rules
+Stage 4: Rank       │ &lt; 50ms │ Multi-objective scoring
+Stage 5: Respond    │ &lt; 20ms │ JSON assembly + async audit
+──────────────────────────────
+Total               │  160ms │ 40ms headroom to SLA</div>
+        </div>
+        <div>
+          <h3 style="margin-bottom:12px">Two-Tier Cache Architecture</h3>
+          <div class="code-block">
+<span class="comment">// L1 in-process → L2 Redis → origin</span>
+Catalog:
+  L1 ConcurrentHashMap (60s TTL)
+  └→ L2 Redis (15 min TTL)
+      └→ Default catalog (6 products)
+
+Subscriber:
+  L1 ConcurrentHashMap (30s TTL)
+  └→ L2 Redis (5 min TTL)
+      └→ BSS fetch (500ms timeout)
+
+<span class="comment">// L1 hit rate: &gt;80% under sustained load</span>
+<span class="comment">// L1 hit latency: &lt; 0.1ms (no I/O)</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI & ML Tab -->
+    <div class="tech-panel" id="tab-ai">
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px;margin-bottom:28px">
+        <h3 style="margin-bottom:12px;color:var(--heading)">Our AI Philosophy: Not every problem is a GenAI problem.</h3>
+        <p style="color:var(--text-secondary);font-size:0.92rem;line-height:1.7">RetainIQ uses AI where it creates measurable value — and classical algorithms everywhere else. We don't use LLMs to rank offers because a gradient boosted tree does it in 2ms with full explainability. We don't use embeddings for eligibility because a graph traversal is deterministic and auditable. <strong style="color:var(--heading)">The right tool for the right job.</strong></p>
+      </div>
+      <div class="ai-grid">
+        <div class="ai-card ml">
+          <span class="ai-badge ml-badge">Machine Learning</span>
+          <h3>Churn Prediction</h3>
+          <p>LightGBM gradient boosted trees with 5 feature groups. Sub-millisecond inference, SHAP explanations, Bayesian cold-start adaptation per tenant.</p>
+          <div class="formula-box">Features: Usage(35%) + Billing(25%) + Contact(20%) + Lifecycle(12%) + Competitive(8%)</div>
+        </div>
+        <div class="ai-card ml">
+          <span class="ai-badge ml-badge">Machine Learning</span>
+          <h3>Outcome Learning</h3>
+          <p>Accept/decline feedback feeds weekly retraining. Model AUC improves measurably over 30-day windows. Automatic rollback if drift exceeds 5%.</p>
+          <div class="formula-box">Kafka → Feature Store → Argo Training → MLflow Registry → Canary Deploy</div>
+        </div>
+        <div class="ai-card classical">
+          <span class="ai-badge algo-badge">Classical Algorithm</span>
+          <h3>Multi-Objective Ranking</h3>
+          <p>Configurable weighted scoring — not a black box. Operators tune the weights to match their business priorities.</p>
+          <div class="formula-box">score = 0.45*retention + 0.30*margin − 0.15*spend_cap + 0.10*context</div>
+        </div>
+        <div class="ai-card classical">
+          <span class="ai-badge algo-badge">Classical Algorithm</span>
+          <h3>Catalog Graph</h3>
+          <p>Products are nodes with edges: incompatibility, upgrade-from, bundle-with. Graph traversal ensures offers are logically consistent — no ML needed.</p>
+          <div class="formula-box">Graph: 6 products × 3 edge types × per-market regulatory metadata</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Observability Tab -->
+    <div class="tech-panel" id="tab-obs">
+      <h3 style="margin-bottom:20px">Full-stack observability — metrics, traces, and logs correlated end-to-end</h3>
+      <div class="obs-features">
+        <div class="obs-feature">
+          <h3>Metrics (Prometheus)</h3>
+          <p>Custom Micrometer metrics for every pipeline stage, cache tier, churn band, and business outcome. 8 SLO alerts pre-configured.</p>
+          <div class="obs-tool">retainiq_pipeline_*, retainiq_cache_*, retainiq_decide_*</div>
+        </div>
+        <div class="obs-feature">
+          <h3>Tracing (Tempo)</h3>
+          <p>Distributed traces via OpenTelemetry. Every decision gets a trace ID — search by decision_id, subscriber, or tenant for full E2E visibility.</p>
+          <div class="obs-tool">W3C traceparent propagation → OTel Collector → Tempo</div>
+        </div>
+        <div class="obs-feature">
+          <h3>Logs (Loki)</h3>
+          <p>Structured JSON logs with MDC context: traceId, tenantId, latency. Promtail ships container logs. Trace-to-log correlation in Grafana.</p>
+          <div class="obs-tool">{service="retainiq"} |= "decision_id"</div>
+        </div>
+        <div class="obs-feature">
+          <h3>3 Grafana Dashboards</h3>
+          <p>Overview (SLOs + business), API Performance (real-time RPS, P99, cache hit rates), E2E Tracing (search by decision, error investigation).</p>
+          <div class="obs-tool">http://localhost:3000</div>
+        </div>
+        <div class="obs-feature">
+          <h3>SLO Alerts</h3>
+          <p>P99 > 180ms (warning), P99 > 200ms (critical), error rate > 0.5%, degraded > 10%, cache hit < 85%, model drift AUC > 5%.</p>
+          <div class="obs-tool">Prometheus alerting rules → PagerDuty / Slack</div>
+        </div>
+        <div class="obs-feature">
+          <h3>Infrastructure Exporters</h3>
+          <p>Redis, PostgreSQL, and Kafka metrics via dedicated exporters. Full stack visibility — not just the app layer.</p>
+          <div class="obs-tool">redis-exporter:9121 · postgres-exporter:9187 · kafka-exporter:9308</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tech Stack Tab -->
+    <div class="tech-panel" id="tab-stack">
+      <h3 style="margin-bottom:20px">Architecture Decision Records — every choice has a rationale</h3>
+      <div class="comparison">
+        <table>
+          <thead><tr><th>Decision</th><th>Choice</th><th>Why</th></tr></thead>
+          <tbody>
+            <tr><td>Language</td><td style="color:var(--cyan);font-weight:600">Kotlin / JVM 21</td><td>Coroutines for async I/O, LightGBM JVM bindings, ZGC for low-latency GC, strong MENA hiring pool</td></tr>
+            <tr><td>Framework</td><td style="color:var(--cyan);font-weight:600">Spring Boot 3 + WebFlux</td><td>Reactive non-blocking I/O for high throughput, Micrometer for metrics, mature K8s deployment</td></tr>
+            <tr><td>Cloud Region</td><td style="color:var(--cyan);font-weight:600">AWS me-south-1 (Bahrain)</td><td>Most mature MENA region, managed Kafka/RDS/ElastiCache, covers UAE + KSA residency</td></tr>
+            <tr><td>Database</td><td style="color:var(--cyan);font-weight:600">PostgreSQL 15</td><td>Partitioned decisions table (monthly), Flyway migrations, schema-per-tenant isolation</td></tr>
+            <tr><td>Cache</td><td style="color:var(--cyan);font-weight:600">Redis 7 + L1 in-process</td><td>Two-tier: ConcurrentHashMap (30-60s) → Redis (1-15min). L1 eliminates serialization overhead</td></tr>
+            <tr><td>ML Framework</td><td style="color:var(--cyan);font-weight:600">LightGBM</td><td>Sub-ms inference, &lt;10MB model, ONNX export for JVM, SHAP interpretability, proven in telco churn</td></tr>
+            <tr><td>Event Streaming</td><td style="color:var(--cyan);font-weight:600">Kafka (AWS MSK)</td><td>Outcome events → retraining pipeline, managed service reduces ops burden</td></tr>
+            <tr><td>Container Runtime</td><td style="color:var(--cyan);font-weight:600">K8s + HPA (3-20 pods)</td><td>Auto-scale on CPU + RPS, ZGC tuned, non-root container, tini as PID 1</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- ═══ CTA ═══ -->
 <section class="cta-section">
   <div class="container">
@@ -775,6 +964,14 @@ function hl(j) {
 }
 
 setTimeout(runDemo, 600);
+
+/* Tech Corner Tabs */
+function showTab(id) {
+  document.querySelectorAll('.tech-tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tech-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('active');
+  event.target.classList.add('active');
+}
 
 /* Pipeline animation */
 const pipeObs = new IntersectionObserver(es => es.forEach(e => {
